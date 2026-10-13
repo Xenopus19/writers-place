@@ -12,13 +12,20 @@
   "dependencies": {
     "@writers-place/shared": "*",
     "cors": "^2.8.5",
-    "express": "^4.21.2"
+    "dotenv": "^18.0.7",
+    "express": "^4.21.2",
+    "pg": "^8.23.1",
+    "sequelize": "^6.37.8",
+    "umzug": "^3.8.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
+    "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.2",
+    "@types/sequelize": "^4.28.20",
     "@types/supertest": "^6.0.2",
+    "@types/umzug": "^2.3.9",
     "supertest": "^7.0.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
