@@ -4,7 +4,7 @@ export interface User {
   email: string;
 }
 
-export interface ApiResponse<T> {
+export interface Article<T> {
   data: T;
   error?: string;
 }

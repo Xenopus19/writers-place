@@ -1,25 +1,31 @@
-import { useEffect, useState } from 'react'
-import type { ApiResponse, User } from '@writers-place/shared'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './App.css'
+import AppLayout from './AppLayout'
+import ArticlePage from './components/ArticlePage'
+import ArticlesCatalog from './components/ArticlesCatalog'
+import LogIn from './components/LogIn'
+import MainPage from './components/MainPage'
+import PublishArticle from './components/PublishArticle'
+import SignUp from './components/SignUp'
+import UserPage from './components/UserPage'
+
+const router = createBrowserRouter([
+  {
+    element: <AppLayout />,
+    children: [
+      { path: '/', element: <MainPage /> },
+      { path: '/articles', element: <ArticlesCatalog /> },
+      { path: '/articles/:id', element: <ArticlePage /> },
+      { path: '/login', element: <LogIn /> },
+      { path: '/signup', element: <SignUp /> },
+      { path: '/profile', element: <UserPage /> },
+      { path: '/publish', element: <PublishArticle /> },
+    ],
+  },
+])
 
 function App() {
-  const [user, setUser] = useState<User | null>(null)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    fetch('/api/users/me')
-      .then((res) => res.json() as Promise<ApiResponse<User>>)
-      .then((body) => setUser(body.data))
-      .catch(() => setError('Failed to reach backend'))
-  }, [])
-
-  return (
-    <section>
-      <h1>Writers Place</h1>
-      {error && <p role="alert">{error}</p>}
-      {user ? <p>You are welcomed</p> : <p>Loading user…</p>}
-    </section>
-  )
+  return <RouterProvider router={router} />
 }
 
 export default App
