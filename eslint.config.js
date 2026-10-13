@@ -9,4 +9,15 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   eslintConfigPrettier,
+  {
+    rules: {
+      'object-curly-newline': [
+        'error',
+        {
+          multiline: true,
+          consistent: true,
+        },
+      ],
+    },
+  },
 );

@@ -1,0 +1,10 @@
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+  "username": "ada",
+  "name": "Ada Lovelace",
+  "about": "First programmer",
+  "password": "supersecret123",
+  "avatarUrl": "https://example.com/avatars/ada.png"
+}
