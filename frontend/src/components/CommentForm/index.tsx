@@ -1,9 +1,12 @@
+import { Button } from "../ui/button"
+
+
 const CommentForm = () => {
   return (
     <form>
       <textarea placeholder="Write a comment" />
       <br />
-      <button type="button">Send</button>
+      <Button type="button">Send</Button>
     </form>
   )
 }
