@@ -1,29 +1,25 @@
-import useUploadImage from "@/hooks/useUploadImage";
-import useLogin from "@/hooks/useLogin";
+import useUploadImage from "../../hooks/useUploadImage";
 import SignUpForm from "./SignUpForm";
 import type { SignUpInfoType } from "./SignUpSchema";
 import { useMutation } from "@tanstack/react-query";
-
-import { handleApiError } from "@/utils/handleApiError";
-import { useAppDispatch } from "@/store/hooks";
 import { createUser } from "../../services/userService";
 
 const SignUp = () => {
-  const { uploadImage } = useUploadImage();
-  const { login } = useLogin();
+  const uploadImageMutation = useUploadImage();
+  // const { login } = useLogin();
   const createUserMutation = useMutation({ mutationFn: createUser });
-  const dispatch = useAppDispatch();
 
   const handleSubmit = async (data: SignUpInfoType) => {
     try {
-      const key = await uploadImage(data.avatar[0]);
-      await createUserMutation.mutateAsync({
+      const key = await uploadImageMutation.mutateAsync(data.avatar[0]);
+      const user = await createUserMutation.mutateAsync({
         ...data,
         avatarUrl: `${import.meta.env.VITE_BUCKET_URL}/${key}`,
       });
-      await login({ username: data.username, password: data.password });
+      console.log("User created successfully", user);
+      // await login({ username: data.username, password: data.password });
     } catch (error) {
-      handleApiError(error, dispatch, "Sign up failed. Consider changing your information and try again.");
+      console.error(error);
     }
   };
 

@@ -1,9 +1,8 @@
 import axios from "axios";
 import { TOKEN } from "./localStorage";
-import { BACKEND_URL } from "./config";
 
 const api = axios.create({
-  baseURL: `${BACKEND_URL}/api`,
+  baseURL: `${import.meta.env.VITE_BACKEND_URL ?? ""}/api`,
 });
 
 api.interceptors.request.use((config) => {

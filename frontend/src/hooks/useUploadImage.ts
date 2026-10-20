@@ -1,9 +1,6 @@
-const useUploadImage = () => {
-    const uploadImage = async (file: File) => {
-        const urlResponse = 
-    };
+import { useMutation } from "@tanstack/react-query";
+import { uploadImage } from "../services/imageService";
 
-    return { uploadImage };
-};
+const useUploadImage = () => useMutation({ mutationFn: uploadImage });
 
 export default useUploadImage;
