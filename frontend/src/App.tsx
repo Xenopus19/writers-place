@@ -9,6 +9,7 @@ import MainPage from './components/MainPage'
 import PublishArticle from './components/PublishArticle'
 import SignUp from './components/SignUp'
 import UserPage from './components/UserPage'
+import { UserProvider } from './components/UserContext'
 
 const router = createBrowserRouter([
   {
@@ -30,7 +31,9 @@ const queryClient = new QueryClient()
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <UserProvider>
+        <RouterProvider router={router} />
+      </UserProvider>
     </QueryClientProvider>
   )
 }

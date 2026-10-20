@@ -17,3 +17,4 @@ export interface Article<T> {
   data: T;
   error?: string;
 }
+

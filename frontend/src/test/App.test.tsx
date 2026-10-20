@@ -10,5 +10,6 @@ describe('App', () => {
     );
     render(<App />);
     expect(await screen.findByText('Writers Place')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Log in' })).toHaveAttribute('href', '/login');
   });
 });

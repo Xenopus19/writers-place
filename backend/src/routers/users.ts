@@ -3,8 +3,24 @@ import { Router } from 'express';
 import { UniqueConstraintError } from 'sequelize';
 import { User } from '../models/index.js';
 import { createUserSchema } from '../schemas/createUserSchema.js';
+import { requireAuth, type AuthenticatedRequest } from '../util/auth.js';
 
 const usersRouter = Router();
+
+usersRouter.get('/me', requireAuth, async (req, res) => {
+  try {
+    const { id } = (req as AuthenticatedRequest).tokenUser;
+    const user = await User.findByPk(id);
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 usersRouter.post('/', async (req, res) => {
   const parsed = createUserSchema.safeParse(req.body);
