@@ -1,0 +1,7 @@
+POST http://localhost:3001/api/images
+Content-Type: application/json
+
+{
+  "fileName": "test-image.jpg",
+  "fileType": "image/jpeg"
+}

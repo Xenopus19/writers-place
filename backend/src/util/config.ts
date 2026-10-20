@@ -12,3 +12,7 @@ export const CLOUDFLARE_ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID || '';
 export const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID || '';
 
 export const R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY || '';
+
+export const R2_BUCKET_NAME = process.env.R2_BUCKET_NAME || '';
+
+export const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || '';
