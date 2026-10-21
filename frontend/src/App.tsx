@@ -7,6 +7,7 @@ import ArticlesCatalog from './components/ArticlesCatalog'
 import LogIn from './components/Login'
 import MainPage from './components/MainPage'
 import PublishArticle from './components/PublishArticle'
+import ProtectedPage from './components/ProtectedPage'
 import SignUp from './components/SignUp'
 import UserPage from './components/UserPage'
 import { UserProvider } from './components/UserContext'
@@ -20,8 +21,22 @@ const router = createBrowserRouter([
       { path: '/articles/:id', element: <ArticlePage /> },
       { path: '/login', element: <LogIn /> },
       { path: '/signup', element: <SignUp /> },
-      { path: '/profile', element: <UserPage /> },
-      { path: '/publish', element: <PublishArticle /> },
+      {
+        path: '/profile',
+        element: (
+          <ProtectedPage>
+            <UserPage />
+          </ProtectedPage>
+        ),
+      },
+      {
+        path: '/publish',
+        element: (
+          <ProtectedPage>
+            <PublishArticle />
+          </ProtectedPage>
+        ),
+      },
     ],
   },
 ])

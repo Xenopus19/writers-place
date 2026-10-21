@@ -5,9 +5,10 @@ import { getCurrentUser } from '../services/userService';
 import { TOKEN } from '../utils/localStorage';
 
 const UserContext = createContext<User | null>(null);
+const UserLoadingContext = createContext(false);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const { data } = useQuery<User>({
+  const { data, isLoading } = useQuery<User>({
     queryKey: ['me'],
     queryFn: getCurrentUser,
     enabled: !!localStorage.getItem(TOKEN),
@@ -16,10 +17,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   return (
-    <UserContext.Provider value={data ?? null}>
+    <UserLoadingContext.Provider value={isLoading}>
+      <UserContext.Provider value={data ?? null}>
         {children}
-    </UserContext.Provider>
+      </UserContext.Provider>
+    </UserLoadingContext.Provider>
   );
 };
 
 export const useUser = () => useContext(UserContext);
+export const useUserLoading = () => useContext(UserLoadingContext);

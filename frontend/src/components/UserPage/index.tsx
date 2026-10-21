@@ -1,12 +1,14 @@
-import { placeholderUser } from '../../placeholders'
+import { useUser } from '../UserContext';
 
 const UserPage = () => {
-  const user = placeholderUser
+  const user = useUser();
+  if(!user) {
+    return null;
+  }
   return (
     <div>
       <h1>User Page</h1>
       <img src={user.avatarUrl} alt={user.username} />
-      <p>ID: {user.id}</p>
       <p>Username: {user.username}</p>
       <p>Name: {user.name}</p>
       <p>About: {user.about}</p>
