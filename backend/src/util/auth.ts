@@ -3,7 +3,13 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from './config.js';
 import type { TokenUser } from '../routers/login.js';
 
-export type AuthenticatedRequest = Request & { tokenUser: TokenUser };
+declare global {
+  namespace Express {
+    interface Request {
+      tokenUser: TokenUser;
+    }
+  }
+}
 
 export const requireAuth = (req: Request, res: Response, next: NextFunction) => {
   const header = req.headers.authorization;
@@ -14,7 +20,7 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction) => 
 
   try {
     const payload = jwt.verify(header.slice(7), JWT_SECRET) as TokenUser;
-    (req as AuthenticatedRequest).tokenUser = payload;
+    Object.assign(req, { tokenUser: payload });
     next();
   } catch {
     res.status(401).json({ error: 'Invalid token' });

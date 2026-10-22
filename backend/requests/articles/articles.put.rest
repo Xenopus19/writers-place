@@ -1,0 +1,56 @@
+@baseUrl = http://localhost:3001/api/articles
+@articleId = replace-with-your-article-id
+@token = replace-with-your-jwt
+
+### Update article (valid; must be owned by the authenticated user)
+PUT {{baseUrl}}/{{articleId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Updated article title",
+  "description": "An updated short description",
+  "text": "Updated full article text."
+}
+
+### Update article without authentication (expect 401)
+PUT {{baseUrl}}/{{articleId}}
+Content-Type: application/json
+
+{
+  "title": "Updated article title"
+}
+
+### Update article with invalid token (expect 401)
+PUT {{baseUrl}}/{{articleId}}
+Content-Type: application/json
+Authorization: Bearer invalid-token
+
+{
+  "title": "Updated article title"
+}
+
+### Update article with empty title (expect 400)
+PUT {{baseUrl}}/{{articleId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": ""
+}
+
+### Update article with no fields (expect 400)
+PUT {{baseUrl}}/{{articleId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{}
+
+### Update an unknown article (expect 404)
+PUT {{baseUrl}}/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Updated article title"
+}

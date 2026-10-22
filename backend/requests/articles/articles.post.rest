@@ -1,0 +1,65 @@
+@baseUrl = http://localhost:3001/api/articles
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU0NmNiNDQ4LTcyZDItNDZjOC1iZmRiLTdiMjY0NjhlOWNmNyIsInVzZXJuYW1lIjoiYWRhIiwiaWF0IjoxNzkyNTY0ODY4fQ.NhaOa5N_Rz53CaQ7TNoKB1So6Q3SxPy3-0YjPNy0DhQ
+
+### Add article (valid)
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Stellar Nucleosynthesis",
+    "description": "How intense gravitational pressure inside main-sequence stars fuses lighter elements into heavier nuclei over billions of years.",
+    "text": "Nuclear fusion in stellar cores overcomes electrostatic repulsion through extreme heat and pressure, converting hydrogen into helium and eventually forging heavier metals up to iron."
+}
+
+### Add article without authentication (expect 401)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "title": "My first article",
+  "description": "A short description of the article",
+  "text": "This is the full text of the article."
+}
+
+### Add article with invalid token (expect 401)
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer invalid.token.value
+
+{
+  "title": "My first article",
+  "description": "A short description of the article",
+  "text": "This is the full text of the article."
+}
+
+### Add article with empty title (expect 400)
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "",
+  "description": "A short description of the article",
+  "text": "This is the full text of the article."
+}
+
+### Add article with missing fields (expect 400)
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Only a title"
+}
+
+### Add article with too long description (expect 400)
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Long description",
+  "description": "{{$guid}}{{$guid}}{{$guid}}{{$guid}}{{$guid}}{{$guid}}{{$guid}}{{$guid}}{{$guid}}{{$guid}}{{$guid}}{{$guid}}{{$guid}}{{$guid}}{{$guid}}{{$guid}}",
+  "text": "This is the full text of the article."
+}

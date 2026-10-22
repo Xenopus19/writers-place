@@ -1,0 +1,17 @@
+@baseUrl = http://localhost:3001/api/articles
+@articleId = c451b76a-1275-4a9c-9730-877086029688
+
+### Get all articles
+GET {{baseUrl}}
+
+### Search articles by text query (semantic)
+GET {{baseUrl}}/search?q=nuclear%20fusion&limit=3
+
+### Search without query (expect 400)
+GET {{baseUrl}}/search
+
+### Get article by ID
+GET {{baseUrl}}/{{articleId}}
+
+### Get article with unknown ID (expect 404)
+GET {{baseUrl}}/00000000-0000-0000-0000-000000000000

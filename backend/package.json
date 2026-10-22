@@ -12,6 +12,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1153.0",
     "@aws-sdk/s3-request-presigner": "^3.1153.0",
+    "@google/genai": "^2.30.0",
     "@writers-place/shared": "*",
     "aws-sdk": "^2.1693.0",
     "bcryptjs": "^3.0.3",
@@ -20,6 +21,7 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.23.1",
+    "pgvector": "^0.3.0",
     "sequelize": "^6.37.8",
     "umzug": "^3.8.3",
     "zod": "^4.6.7"

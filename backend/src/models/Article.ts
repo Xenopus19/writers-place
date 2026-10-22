@@ -16,7 +16,7 @@ export class Article extends Model<
   declare description: string;
   declare text: string;
   declare userId: string;
-  declare embedding: CreationOptional<number[] | null>;
+  declare embedding: CreationOptional<string | null>;
   declare createdAt: CreationOptional<Date>;
 }
 
@@ -36,7 +36,7 @@ Article.init(
       field: 'user_id',
       references: { model: 'users', key: 'id' },
     },
-    embedding: { type: DataTypes.ARRAY(DataTypes.FLOAT), allowNull: true },
+    embedding: { type: DataTypes.STRING, allowNull: true },
     createdAt: { type: DataTypes.DATE, field: 'created_at' },
   },
   {
