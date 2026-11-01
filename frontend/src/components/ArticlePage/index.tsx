@@ -1,19 +1,30 @@
-import { placeholderArticle, placeholderComments } from '../../placeholders'
-import Comment from '../CommentForm/Comment'
-import CommentForm from '../CommentForm'
-import Article from './Article'
+import { placeholderArticle, placeholderComments } from '../../placeholders';
+import CommentForm from '../CommentForm';
+import Comment from '../CommentForm/Comment';
+import Article from './Article';
 
 const ArticlePage = () => {
   return (
-    <div>
+    <div className="article-page-container">
+      {/* Сама статья */}
       <Article article={placeholderArticle} />
-      <h2>Comments</h2>
-      {placeholderComments.map((c) => (
-        <Comment key={c.id} comment={c} />
-      ))}
-      <CommentForm />
-    </div>
-  )
-}
 
-export default ArticlePage
+      {/* Секция комментариев */}
+      <section className="comments-section-wrapper">
+        <h3>Discussion</h3>
+        
+        <div className="comments-list">
+          {placeholderComments.map((c) => (
+            <Comment key={c.id} comment={c} />
+          ))}
+        </div>
+
+        <div className="comment-form-container">
+          <CommentForm />
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default ArticlePage;

@@ -1,19 +1,55 @@
+import useLogin from '../../hooks/useLogin';
 import { useUser } from '../UserContext';
 
 const UserPage = () => {
   const user = useUser();
-  if(!user) {
+  const { logout } = useLogin();
+
+  if (!user) {
     return null;
   }
-  return (
-    <div>
-      <h1>User Page</h1>
-      <img src={user.avatarUrl} alt={user.username} />
-      <p>Username: {user.username}</p>
-      <p>Name: {user.name}</p>
-      <p>About: {user.about}</p>
-    </div>
-  )
-}
 
-export default UserPage
+  return (
+    <div className="profile-container">
+      <div className="profile-header-card">
+        <div className="profile-avatar-wrapper">
+          <img
+            src={user.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500'}
+            alt={user.username}
+            className="profile-avatar"
+          />
+        </div>
+
+        <div className="profile-info">
+          <span className="profile-eyebrow">AUTHOR PROFILE</span>
+          <h1>{user.name || user.username}</h1>
+          <p className="profile-username">{user.username}</p>
+          
+          {user.about ? (
+            <p className="profile-bio">{user.about}</p>
+          ) : (
+            <p className="profile-bio text-muted">No bio provided yet.</p>
+          )}
+
+          <div className="profile-actions">
+            <button onClick={logout} className="logout-button">
+              Log out
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="profile-content-section">
+        <h2 className="section-title">My Articles</h2>
+        <div className="empty-articles">
+          <p>You haven't published any stories yet.</p>
+          <a href="/publish" className="button-dark" style={{ marginTop: '15px', display: 'inline-flex' }}>
+            Write your first story ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default UserPage;

@@ -1,12 +1,23 @@
-import type { Comment as CommentType } from '../../types'
-
-const Comment = ({ comment }: { comment: CommentType }) => {
-  return (
-    <div style={{ borderBottom: '1px solid #ccc', padding: 4 }}>
-      <small>User {comment.userId} | {comment.createdAt}</small>
-      <p>{comment.text}</p>
-    </div>
-  )
+interface CommentProps {
+  comment: {
+    id: string | number;
+    author?: string;
+    username?: string;
+    createdAt?: string;
+    text: string;
+  };
 }
 
-export default Comment
+const Comment = ({ comment }: CommentProps) => {
+  return (
+    <div className="comment-item">
+      <div className="comment-header">
+        <span className="comment-author">{comment.author || comment.username || 'User'}</span>
+        <span className="comment-date">{comment.createdAt || '2026-01-02'}</span>
+      </div>
+      <p className="comment-text">{comment.text}</p>
+    </div>
+  );
+};
+
+export default Comment;
