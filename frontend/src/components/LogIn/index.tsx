@@ -1,7 +1,7 @@
-import type { LoginInfoType } from "./LoginSchema";
-import LoginForm from "./LoginForm";
-import useLogin from "../../hooks/useLogin";
 import { Link } from "react-router-dom";
+import useLogin from "../../hooks/useLogin";
+import LoginForm from "./LoginForm";
+import type { LoginInfoType } from "./LoginSchema";
 
 const Login = () => {
   const { login } = useLogin();
@@ -10,32 +10,36 @@ const Login = () => {
     try {
       await login(data);
     } catch (error: unknown) {
+      // Handle error
     }
   };
 
   return (
-    <section className="relative mx-auto max-w-xl overflow-hidden rounded-3xl border border-emerald-500/20 bg-linear-to-br from-emerald-500/10 via-background to-background p-6 sm:p-8">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-16 -right-16 h-44 w-44 rounded-full bg-emerald-500/20 blur-3xl"
-      />
-      <div className="relative">
-        <p className="mb-5 text-center text-2xl font-bold text-emerald-700 dark:text-emerald-400">
-          Log into existing account
-        </p>
-        <p className="mb-5 text-center text-sm text-muted-foreground">
-          If you don't have an account, {" "}
-          <Link
-            to="/signup"
-            className="font-semibold text-emerald-700 underline underline-offset-4 hover:text-emerald-600 dark:text-emerald-400 dark:hover:text-emerald-300"
-          >
-            create one
-          </Link>
-          .
-        </p>
-      </div>
-      <LoginForm onSubmit={handleLogin} />
-    </section>
+    <div className="flex min-h-[calc(100vh-220px)] items-center justify-center bg-[#fcfbf9] px-4 py-12">
+      <section className="w-full max-w-md rounded-2xl border border-[#e8e5de] bg-white p-8 shadow-sm transition-all sm:p-10">
+        
+        {/* Заголовок */}
+        <div className="mb-8 text-center">
+          <h1 className="mb-2 font-serif text-3xl font-normal tracking-tight text-[#2d3a2e]">
+            Log into existing account
+          </h1>
+          <p className="text-sm text-[#6b7280]">
+            If you don't have an account,{" "}
+            <Link
+              to="/signup"
+              className="font-medium text-[#2d3a2e] underline underline-offset-4 transition-colors hover:text-[#374333]"
+            >
+              create one
+            </Link>
+            .
+          </p>
+        </div>
+
+        {/* Форма */}
+        <LoginForm onSubmit={handleLogin} />
+
+      </section>
+    </div>
   );
 };
 
