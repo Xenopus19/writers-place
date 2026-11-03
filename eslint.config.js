@@ -11,6 +11,10 @@ export default tseslint.config(
   eslintConfigPrettier,
   {
     rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { ignoreRestSiblings: true },
+      ],
       'object-curly-newline': [
         'error',
         {
