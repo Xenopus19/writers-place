@@ -8,6 +8,7 @@ import {
   updateArticleSchema,
 } from '../schemas/articleSchema.js';
 import { requireAuth } from '../util/auth.js';
+import { getLikesCounts } from '../util/articleLikes.js';
 import {
   embedArticle,
   embedQuery,
@@ -79,7 +80,13 @@ articlesRouter.get('/', async (req, res) => {
       include: [genreInclude],
       order: [['createdAt', 'DESC']],
     });
-    res.json(articles.map(toArticleJson));
+    const likesCounts = await getLikesCounts(articles.map((article) => article.id));
+    res.json(
+      articles.map((article) => ({
+        ...toArticleJson(article),
+        likesCount: likesCounts.get(article.id) ?? 0,
+      }))
+    );
   } catch (error) {
     serverError(res, error);
   }
@@ -105,9 +112,12 @@ articlesRouter.get('/search', async (req, res) => {
       include: [genreInclude],
     });
     const byId = new Map(withGenres.map((article) => [article.id, article]));
+    const likesCounts = await getLikesCounts(withGenres.map((article) => article.id));
     const ordered = articles.flatMap((article) => {
       const full = byId.get(article.id);
-      return full ? [toArticleJson(full)] : [];
+      return full
+        ? [{ ...toArticleJson(full), likesCount: likesCounts.get(full.id) ?? 0 }]
+        : [];
     });
     res.json(ordered);
   } catch (error) {
@@ -124,7 +134,8 @@ articlesRouter.get('/:id', async (req, res) => {
       res.status(404).json({ error: 'Article not found' });
       return;
     }
-    res.json(toArticleJson(article));
+    const likesCounts = await getLikesCounts([article.id]);
+    res.json({ ...toArticleJson(article), likesCount: likesCounts.get(article.id) ?? 0 });
   } catch (error) {
     serverError(res, error);
   }

@@ -1,9 +1,14 @@
 import { Article } from './Article.js';
 import { ArticleGenre } from './ArticleGenre.js';
+import { ArticleLike } from './ArticleLike.js';
 import { Genre } from './Genre.js';
 import { User } from './User.js';
 
-User.hasMany(Article, { foreignKey: 'userId', as: 'articles', onDelete: 'CASCADE' });
+User.hasMany(Article, {
+  foreignKey: 'userId',
+  as: 'articles',
+  onDelete: 'CASCADE',
+});
 Article.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
 Article.belongsToMany(Genre, {
@@ -19,4 +24,17 @@ Genre.belongsToMany(Article, {
   as: 'articles',
 });
 
-export { Article, ArticleGenre, Genre, User };
+Article.belongsToMany(User, {
+  through: ArticleLike,
+  foreignKey: 'articleId',
+  otherKey: 'userId',
+  as: 'likedBy',
+});
+User.belongsToMany(Article, {
+  through: ArticleLike,
+  foreignKey: 'userId',
+  otherKey: 'articleId',
+  as: 'likedArticles',
+});
+
+export { Article, ArticleGenre, ArticleLike, Genre, User };
