@@ -1,0 +1,15 @@
+@baseUrl = http://localhost:3001/api/articles
+@articleId = e50f9cb9-96dc-433b-a5d6-25c340ad8019
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU0NmNiNDQ4LTcyZDItNDZjOC1iZmRiLTdiMjY0NjhlOWNmNyIsInVzZXJuYW1lIjoiYWRhIiwiaWF0IjoxNzkyNTY0ODY4fQ.NhaOa5N_Rz53CaQ7TNoKB1So6Q3SxPy3-0YjPNy0DhQ
+
+### List comments, newest first
+GET {{baseUrl}}/{{articleId}}/comments
+
+### Comment on an article
+POST {{baseUrl}}/{{articleId}}/comments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "text": "An interesting article."
+}

@@ -1,5 +1,6 @@
-import { Router } from 'express';
+import { Router, type RequestHandler } from 'express';
 import type { Includeable } from 'sequelize';
+import type { z } from 'zod';
 import { Article, Genre } from '../models/index.js';
 import {
   createArticleSchema,
@@ -8,6 +9,7 @@ import {
   updateArticleSchema,
 } from '../schemas/articleSchema.js';
 import { requireAuth } from '../util/auth.js';
+import { requireArticle } from '../util/articleLookup.js';
 import { getLikesCounts } from '../util/articleLikes.js';
 import {
   embedArticle,
@@ -17,11 +19,27 @@ import {
 
 const articlesRouter = Router();
 
+declare module 'express-serve-static-core' {
+  interface Request {
+    articleUpdates: z.infer<typeof updateArticleSchema>;
+  }
+}
+
 const genreInclude: Includeable = {
   model: Genre,
   as: 'genres',
   attributes: ['name'],
   through: { attributes: [] },
+};
+
+const validateArticleUpdate: RequestHandler = (req, res, next) => {
+  const parsed = updateArticleSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.issues });
+    return;
+  }
+  req.articleUpdates = parsed.data;
+  next();
 };
 
 const serverError = (res: import('express').Response, error: unknown) => {
@@ -125,15 +143,9 @@ articlesRouter.get('/search', async (req, res) => {
   }
 });
 
-articlesRouter.get('/:id', async (req, res) => {
+articlesRouter.get('/:id', requireArticle('id', { include: [genreInclude] }), async (req, res) => {
   try {
-    const article = await Article.findByPk(String(req.params.id), {
-      include: [genreInclude],
-    });
-    if (!article) {
-      res.status(404).json({ error: 'Article not found' });
-      return;
-    }
+    const article = req.article;
     const likesCounts = await getLikesCounts([article.id]);
     res.json({ ...toArticleJson(article), likesCount: likesCounts.get(article.id) ?? 0 });
   } catch (error) {
@@ -167,27 +179,15 @@ articlesRouter.post('/', requireAuth, async (req, res) => {
   }
 });
 
-articlesRouter.put('/:id', requireAuth, async (req, res) => {
-  const parsed = updateArticleSchema.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.issues });
-    return;
-  }
-
+articlesRouter.put('/:id', requireAuth, validateArticleUpdate, requireArticle('id', { include: [genreInclude] }), async (req, res) => {
   try {
-    const article = await Article.findByPk(String(req.params.id), {
-      include: [genreInclude],
-    });
-    if (!article) {
-      res.status(404).json({ error: 'Article not found' });
-      return;
-    }
+    const article = req.article;
     if (article.userId !== req.tokenUser.id) {
       res.status(403).json({ error: 'Forbidden' });
       return;
     }
 
-    const { genres, ...updates } = parsed.data;
+    const { genres, ...updates } = req.articleUpdates;
     if (genres !== undefined) {
       const { rows, unknown } = await findGenresByName(genres);
       if (unknown.length > 0) {
@@ -228,13 +228,9 @@ articlesRouter.put('/:id', requireAuth, async (req, res) => {
   }
 });
 
-articlesRouter.delete('/:id', requireAuth, async (req, res) => {
+articlesRouter.delete('/:id', requireAuth, requireArticle('id'), async (req, res) => {
   try {
-    const article = await Article.findByPk(String(req.params.id));
-    if (!article) {
-      res.status(404).json({ error: 'Article not found' });
-      return;
-    }
+    const article = req.article;
     if (article.userId !== req.tokenUser.id) {
       res.status(403).json({ error: 'Forbidden' });
       return;

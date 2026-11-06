@@ -1,32 +1,11 @@
 import { Router } from 'express';
-import { z } from 'zod';
-import { Article, ArticleLike } from '../models/index.js';
+import { ArticleLike } from '../models/index.js';
+import { requireArticle } from '../util/articleLookup.js';
 import { requireAuth } from '../util/auth.js';
 
 const likesRouter = Router({ mergeParams: true });
-const articleIdSchema = z.uuid();
-
 likesRouter.use(requireAuth);
-
-likesRouter.use(async (req, res, next) => {
-  const parsed = articleIdSchema.safeParse(req.params.articleId);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.issues });
-    return;
-  }
-
-  try {
-    const article = await Article.findByPk(parsed.data, { attributes: ['id'] });
-    if (!article) {
-      res.status(404).json({ error: 'Article not found' });
-      return;
-    }
-    next();
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+likesRouter.use(requireArticle('articleId', { attributes: ['id'] }));
 
 likesRouter.post<{ articleId: string }>('/', async (req, res) => {
   try {
