@@ -11,6 +11,7 @@ import ProtectedPage from './components/ProtectedPage'
 import SignUp from './components/SignUp'
 import UserPage from './components/UserPage'
 import { UserProvider } from './components/UserContext'
+import BackendHealthCheck from './components/BackendHealthCheck'
 
 const router = createBrowserRouter([
   {
@@ -46,9 +47,11 @@ const queryClient = new QueryClient()
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+     <BackendHealthCheck>
       <UserProvider>
         <RouterProvider router={router} />
       </UserProvider>
+     </BackendHealthCheck>
     </QueryClientProvider>
   )
 }

@@ -1,5 +1,13 @@
 # React + TypeScript + Vite
 
+## Backend startup check
+
+The app waits for a successful response from `/api/health` before rendering.
+While the backend is unavailable, it shows an elapsed timer and retries five
+seconds after each failed request. Each request times out after five seconds.
+The check uses the normal API base URL (`VITE_BACKEND_URL`, or the Vite proxy
+when unset) and runs on startup, not continuously after the app has loaded.
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:

@@ -2,7 +2,8 @@ import cors from 'cors';
 import express from 'express';
 import usersRouter from './routers/users.js';
 import loginRouter from './routers/login.js';
-import imagesRouter from './routers/images.js';
+
+import imagesRouter from './routers/images.js';
 import articlesRouter from './routers/articles.js';
 import genresRouter from './routers/genres.js';
 import likesRouter from './routers/likes.js';
@@ -20,3 +21,4 @@ app.use('/api/articles/:articleId/likes', likesRouter);
 app.use('/api/articles/:articleId/comments', commentsRouter);
 app.use('/api/articles', articlesRouter);
 app.use('/api/genres', genresRouter);
+app.use('/api/health', (req, res) => res.status(200).json({ status: 'ok' }));
