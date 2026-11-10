@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom';
 import useLogin from '../../hooks/useLogin';
 import { useUser } from '../UserContext';
+
 
 const UserPage = () => {
   const user = useUser();
@@ -43,9 +45,9 @@ const UserPage = () => {
         <h2 className="section-title">My Articles</h2>
         <div className="empty-articles">
           <p>You haven't published any stories yet.</p>
-          <a href="/publish" className="button-dark" style={{ marginTop: '15px', display: 'inline-flex' }}>
+          <Link to="/publish" className="button-dark" style={{ marginTop: '15px', display: 'inline-flex' }}>
             Write your first story ↗
-          </a>
+          </Link>
         </div>
       </div>
     </div>
