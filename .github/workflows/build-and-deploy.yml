@@ -1,0 +1,70 @@
+name: Build and deploy
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+  deploy-frontend:
+    if: github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render static site deploy
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_FRONTEND_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK" ]; then
+            echo "::error::RENDER_FRONTEND_DEPLOY_HOOK is not configured"
+            exit 1
+          fi
+          status="$(curl --fail --silent --show-error --output /dev/null \
+            --connect-timeout 10 --max-time 30 \
+            --write-out '%{http_code}' \
+            --request POST "${RENDER_DEPLOY_HOOK}&ref=${GITHUB_SHA}")"
+          if [ "$status" != 200 ] && [ "$status" != 202 ]; then
+            echo "::error::Render returned unexpected HTTP status $status"
+            exit 1
+          fi
+
+  deploy-backend:
+    if: github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render web service deploy
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_BACKEND_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK" ]; then
+            echo "::error::RENDER_BACKEND_DEPLOY_HOOK is not configured"
+            exit 1
+          fi
+          status="$(curl --fail --silent --show-error --output /dev/null \
+            --connect-timeout 10 --max-time 30 \
+            --write-out '%{http_code}' \
+            --request POST "${RENDER_DEPLOY_HOOK}&ref=${GITHUB_SHA}")"
+          if [ "$status" != 200 ] && [ "$status" != 202 ]; then
+            echo "::error::Render returned unexpected HTTP status $status"
+            exit 1
+          fi
