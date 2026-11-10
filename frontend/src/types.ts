@@ -6,7 +6,7 @@ export interface Article {
 	userId: string;
 	createdAt: string;
     genres: string[];
-    likes: number;
+    likesCount: number;
 }
 
 export interface User {
@@ -23,4 +23,5 @@ export interface Comment {
 	text: string;
 	articleId: string;
 	userId: string;
+	user?: Pick<User, 'id' | 'username' | 'name' | 'avatarUrl'>;
 }

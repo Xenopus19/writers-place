@@ -1,5 +1,11 @@
 # Writers Place
 
+## Comments
+
+Signed-in users can comment on an article. Comments are trimmed and must contain
+between 1 and 150 characters. The form keeps the draft if submission fails and
+refreshes the discussion after a successful post.
+
 ## GitHub Actions and Render deployment
 
 The [build and deploy workflow](.github/workflows/build-and-deploy.yml) builds

@@ -1,7 +1,7 @@
 import { Router } from 'express';
+import { createCommentSchema } from '@writers-place/shared';
 import type { Includeable } from 'sequelize';
 import { Comment, User } from '../models/index.js';
-import { createCommentSchema } from '../schemas/commentSchema.js';
 import { requireArticle } from '../util/articleLookup.js';
 import { requireAuth } from '../util/auth.js';
 

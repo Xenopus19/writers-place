@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createCommentSchema } from '../src/schemas/commentSchema.js';
+import { createCommentSchema } from '@writers-place/shared';
 
 describe('createCommentSchema', () => {
   it('trims text and accepts the 150-character limit', () => {

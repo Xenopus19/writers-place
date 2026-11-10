@@ -16,7 +16,7 @@ export const placeholderArticle: Article = {
   userId: '1',
   createdAt: '2026-01-01',
   genres: ['Fiction', 'Drama'],
-  likes: 12,
+  likesCount: 12,
 }
 
 export const placeholderArticles: Article[] = [1, 2, 3, 4].map((n) => ({
