@@ -1,5 +1,28 @@
 import { z } from 'zod';
 
+export interface ApiFieldError {
+  field: string;
+  message: string;
+}
+
+export type ApiErrorCode = 
+  | 'VALIDATION_ERROR'
+  | 'RESOURCE_EXISTS'
+  | 'NOT_FOUND'
+  | 'UNAUTHORIZED'
+  | 'INTERNAL_SERVER_ERROR'
+  |'FORBIDDEN'
+  | 'INVALID_CREDENTIALS'
+  | 'REQUEST_SETUP_ERROR'
+  | 'NETWORK_ERROR'
+
+export interface ApiErrorResponse {
+  status: number;
+  code: ApiErrorCode;
+  message: string;
+  errors?: ApiFieldError[];
+}
+
 export const baseSignUpSchema = z.object({
   username: z.string().trim().min(3).max(32),
   name: z.string().trim().min(1).max(100),

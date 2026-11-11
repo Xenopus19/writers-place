@@ -7,7 +7,7 @@ import type { LoginInfoType } from "./LoginSchema";
 import loginSchema from "./LoginSchema";
 
 interface LoginFormProps {
-  onSubmit: (data: LoginInfoType) => void;
+  onSubmit: (data: LoginInfoType) => Promise<void>;
 }
 
 const LoginForm = ({ onSubmit }: LoginFormProps) => {
@@ -20,7 +20,7 @@ const LoginForm = ({ onSubmit }: LoginFormProps) => {
   });
 
   const submit = async (data: LoginInfoType) => {
-    onSubmit(data);
+    await onSubmit(data);
   };
 
   return (

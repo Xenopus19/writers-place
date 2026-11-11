@@ -6,30 +6,33 @@ import { createUser } from "../../services/userService";
 import useLogin from "../../hooks/useLogin";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import useError from "../../hooks/useError";
 
 const SignUp = () => {
   const uploadImageMutation = useUploadImage();
   const { login } = useLogin();
   const createUserMutation = useMutation({ mutationFn: createUser });
-  const [error, setError] = useState<"signup" | "login" | null>(null);
+  const [accountCreated, setAccountCreated] = useState(false);
+  const { reportError } = useError();
 
   const handleSubmit = async (data: SignUpInfoType) => {
-    let accountCreated = false;
-    setError(null);
+    let created = false;
     try {
       const key = await uploadImageMutation.mutateAsync(data.avatar[0]);
       await createUserMutation.mutateAsync({
         ...data,
         avatarUrl: `${import.meta.env.VITE_BUCKET_URL}/${key}`,
       });
-      accountCreated = true;
-      const result = await login({ username: data.username, password: data.password });
-      if (!result?.token) {
-        throw new Error("Login response did not contain a token");
-      }
+      created = true;
+      await login({ username: data.username, password: data.password });
     } catch (error) {
-      console.error(error);
-      setError(accountCreated ? "login" : "signup");
+      setAccountCreated(created);
+      reportError(
+        created
+          ? "Your account was created, but automatic login failed."
+          : "Sign up failed. Please try again.",
+        error,
+      );
     }
   };
 
@@ -41,14 +44,10 @@ const SignUp = () => {
             Create account
           </p>
         </div>
-        <SignUpForm onSubmit={handleSubmit} disabled={error === "login"} />
-        {error && (
-          <p role="alert" className="mx-auto mt-4 max-w-md text-sm text-red-600">
-            {error === "login" ? (
-              <>Your account was created, but automatic login failed. <Link className="underline" to="/login">Log in</Link> to continue.</>
-            ) : (
-              "Sign up failed. Please try again."
-            )}
+        <SignUpForm onSubmit={handleSubmit} disabled={accountCreated} />
+        {accountCreated && (
+          <p className="mx-auto mt-4 max-w-md text-sm text-[#73746a]">
+            Your account was created. <Link className="underline" to="/login">Log in</Link> to continue.
           </p>
         )}
       </section>

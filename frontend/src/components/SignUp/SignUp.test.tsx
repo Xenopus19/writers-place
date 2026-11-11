@@ -6,6 +6,8 @@ import { uploadImage } from "../../services/imageService";
 import { createUser, getCurrentUser, loginUser } from "../../services/userService";
 import { TOKEN } from "../../utils/localStorage";
 import SignUp from "./index";
+import { ErrorProvider } from "../ErrorContext";
+import ErrorNotification from "../Error";
 
 vi.mock("../../services/imageService", () => ({ uploadImage: vi.fn() }));
 vi.mock("../../services/userService", () => ({
@@ -28,13 +30,16 @@ const renderSignUp = () => {
   });
   render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={["/signup"]}>
-        <Routes>
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/login" element={<p>Login page</p>} />
-          <Route path="/" element={<p>Main page</p>} />
-        </Routes>
-      </MemoryRouter>
+      <ErrorProvider>
+        <MemoryRouter initialEntries={["/signup"]}>
+          <Routes>
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/login" element={<p>Login page</p>} />
+            <Route path="/" element={<p>Main page</p>} />
+          </Routes>
+        </MemoryRouter>
+        <ErrorNotification />
+      </ErrorProvider>
     </QueryClientProvider>,
   );
   return queryClient;
@@ -122,6 +127,9 @@ describe("SignUp", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Your account was created, but automatic login failed.");
     expect(screen.getByRole("button", { name: "Sign Up" })).toBeDisabled();
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Dismiss error" }));
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sign Up" })).toBeDisabled();
     fireEvent.click(screen.getByRole("link", { name: "Log in" }));
     expect(await screen.findByText("Login page")).toBeInTheDocument();
   });

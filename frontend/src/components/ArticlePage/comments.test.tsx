@@ -1,10 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { AxiosError, AxiosHeaders } from 'axios';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import api from '../../utils/api';
 import ArticlePage from './index';
+import { ApiError } from '../../utils/ApiError';
+import { ErrorProvider } from '../ErrorContext';
+import ErrorNotification from '../Error';
 
 vi.mock('../../utils/api', () => ({
   default: { get: vi.fn(), post: vi.fn() },
@@ -36,12 +38,15 @@ const renderArticle = () => {
   });
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={['/articles/article-1']}>
-        <Routes>
-          <Route path="/articles/:id" element={<ArticlePage />} />
-          <Route path="/login" element={<p>Login page</p>} />
-        </Routes>
-      </MemoryRouter>
+      <ErrorProvider>
+        <MemoryRouter initialEntries={['/articles/article-1']}>
+          <Routes>
+            <Route path="/articles/:id" element={<ArticlePage />} />
+            <Route path="/login" element={<p>Login page</p>} />
+          </Routes>
+        </MemoryRouter>
+        <ErrorNotification />
+      </ErrorProvider>
     </QueryClientProvider>,
   );
 };
@@ -141,14 +146,7 @@ describe('article comments', () => {
   });
 
   it('offers login when the server rejects authentication', async () => {
-    const error = new AxiosError('Unauthorized');
-    error.response = {
-      data: {},
-      status: 401,
-      statusText: 'Unauthorized',
-      headers: {},
-      config: { headers: new AxiosHeaders() },
-    };
+    const error = new ApiError({ status: 401, code: 'UNAUTHORIZED', message: 'Unauthorized' });
     vi.mocked(api.post).mockRejectedValue(error);
     renderArticle();
     fireEvent.change(screen.getByLabelText('Comment'), {
@@ -161,5 +159,39 @@ describe('article comments', () => {
       '/login',
     );
     expect(screen.getByLabelText('Comment')).toHaveValue('My draft');
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss error' }));
+    expect(screen.getByRole('link', { name: 'log in' })).toBeInTheDocument();
+  });
+
+  it('reports an article load failure and allows retry', async () => {
+    vi.mocked(api.get).mockImplementation(async (url) => {
+      if (url === '/articles/article-1') throw new Error('Article unavailable');
+      return { data: [] };
+    });
+    renderArticle();
+    expect(await screen.findByRole('alert')).toHaveTextContent('Failed to load the article.');
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss error' }));
+    expect(screen.getByRole('button', { name: 'Retry loading article' })).toBeInTheDocument();
+    vi.mocked(api.get).mockImplementation(async (url) => {
+      if (url === '/articles/article-1') return { data: article };
+      return { data: [] };
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Retry loading article' }));
+    expect(await screen.findByText('Test article')).toBeInTheDocument();
+  });
+
+  it('reports a comments load failure and allows retry', async () => {
+    vi.mocked(api.get).mockImplementation(async (url) => {
+      if (url === '/articles/article-1') return { data: article };
+      throw new Error('Comments unavailable');
+    });
+    renderArticle();
+    expect(await screen.findByRole('alert')).toHaveTextContent('Failed to load comments.');
+    vi.mocked(api.get).mockImplementation(async (url) => {
+      if (url === '/articles/article-1') return { data: article };
+      return { data: [] };
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Retry loading comments' }));
+    expect(await screen.findByText(/No comments yet/)).toBeInTheDocument();
   });
 });

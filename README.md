@@ -1,5 +1,13 @@
 # Writers Place
 
+## Frontend error notifications
+
+Components under `ErrorProvider` can call `useError().reportError(message, cause)`
+to show a user-facing message and retain the original error as optional context
+data. The message replaces any current notification and disappears after five
+seconds; users can also dismiss it manually. Use explicit, contextual messages
+and keep field validation and persistent recovery controls in the relevant form.
+
 ## Comments
 
 Signed-in users can comment on an article. Comments are trimmed and must contain

@@ -5,6 +5,8 @@ import CommentForm from '../CommentForm';
 import Comment from '../CommentForm/Comment';
 import { Spinner } from '../ui/spinner';
 import Article from './Article';
+import useQueryError from '../../hooks/useQueryError';
+import { Button } from '../ui/button';
 
 const formatDate = (value: string) =>
   new Date(value).toLocaleDateString('en-CA');
@@ -24,6 +26,9 @@ const ArticlePage = () => {
     enabled: !!id,
   });
 
+  useQueryError(articleQuery.error, articleQuery.errorUpdatedAt, articleQuery.isError, 'Failed to load the article.');
+  useQueryError(commentsQuery.error, commentsQuery.errorUpdatedAt, commentsQuery.isError, 'Failed to load comments.');
+
   const article = articleQuery.data;
   const comments = commentsQuery.data ?? [];
 
@@ -35,9 +40,11 @@ const ArticlePage = () => {
         </div>
       )}
       {articleQuery.isError && (
-        <p className="py-10 text-center text-sm text-red-600">
-          Failed to load the article.
-        </p>
+        <div className="py-10 text-center">
+          <Button type="button" variant="outline" onClick={() => void articleQuery.refetch()}>
+            Retry loading article
+          </Button>
+        </div>
       )}
       {article && (
         <Article
@@ -62,9 +69,11 @@ const ArticlePage = () => {
             </div>
           )}
           {commentsQuery.isError && (
-            <p className="py-6 text-center text-sm text-red-600">
-              Failed to load comments.
-            </p>
+            <div className="py-6 text-center">
+              <Button type="button" variant="outline" onClick={() => void commentsQuery.refetch()}>
+                Retry loading comments
+              </Button>
+            </div>
           )}
           {commentsQuery.isSuccess && comments.length === 0 && (
             <p className="py-6 text-center text-sm text-[#73746a]">

@@ -1,34 +1,7 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { TOKEN } from "./localStorage";
-
-export class ApiError extends Error {
-  public code: number;
-  public details: string | null;
-  constructor(code: number, message: string, details: string | null) {
-    super(message);
-    this.code = code;
-    this.details = details;
-  }
-}
-
-export async function request(url: string, options?: RequestInit) {
-  try {
-    const response = await fetch(url, options);
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new ApiError(
-        response.status,
-        data.message || 'Произошла ошибка',
-        data.detail || null
-      );
-    }
-    return data;
-  } catch (err) {
-    if (err instanceof ApiError) throw err;
-    throw new ApiError(0, 'Network error.', 'NETWORK_ERROR');
-  }
-}
+import type { ApiErrorResponse } from "@writers-place/shared";
+import { ApiError } from "./ApiError";
 
 const api = axios.create({
   baseURL: `${import.meta.env.VITE_BACKEND_URL ?? ""}/api`,
@@ -42,6 +15,33 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-api.interceptors
+api.interceptors.response.use(
+  (response) => response,
+
+  (error: AxiosError<ApiErrorResponse>) => {
+    if (error.response) {
+      const errorData = error.response.data;
+
+      throw new ApiError({
+        status: error.response.status,
+        code: errorData?.code || 'UNKNOWN_ERROR',
+        message: errorData?.message || 'Произошла непредвиденная ошибка',
+        errors: errorData?.errors,
+      });
+    } else if (error.request) {
+      throw new ApiError({
+        status: 0,
+        code: 'NETWORK_ERROR',
+        message: 'Network error.',
+      });
+    }
+
+    throw new ApiError({
+      status: 500,
+      code: 'REQUEST_SETUP_ERROR',
+      message: error.message,
+    });
+  }
+);
 
 export default api;
