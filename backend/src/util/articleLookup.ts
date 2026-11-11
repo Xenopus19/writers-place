@@ -2,6 +2,7 @@ import type { RequestHandler } from 'express';
 import type { Attributes, FindOptions } from 'sequelize';
 import { z } from 'zod';
 import { Article } from '../models/index.js';
+import { AppError } from './appError.js';
 
 declare module 'express-serve-static-core' {
   interface Request {
@@ -19,23 +20,22 @@ export const requireArticle =
       'attributes' | 'include'
     > = {}
   ): RequestHandler =>
-  async (req, res, next) => {
+  async (req, _res, next) => {
     const parsed = articleIdSchema.safeParse(req.params[param]);
     if (!parsed.success) {
-      res.status(400).json({ error: parsed.error.issues });
+      next(parsed.error);
       return;
     }
 
     try {
       const article = await Article.findByPk(parsed.data, options);
       if (!article) {
-        res.status(404).json({ error: 'Article not found' });
+        next(AppError.notFound('Article not found'));
         return;
       }
       req.article = article;
       next();
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal server error' });
+      next(error);
     }
   };

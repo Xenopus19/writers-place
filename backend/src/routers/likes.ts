@@ -7,7 +7,7 @@ const likesRouter = Router({ mergeParams: true });
 likesRouter.use(requireAuth);
 likesRouter.use(requireArticle('articleId', { attributes: ['id'] }));
 
-likesRouter.post<{ articleId: string }>('/', async (req, res) => {
+likesRouter.post<{ articleId: string }>('/', async (req, res, next) => {
   try {
     const articleId = String(req.params.articleId);
     await ArticleLike.bulkCreate([{ articleId, userId: req.tokenUser.id }], {
@@ -16,12 +16,11 @@ likesRouter.post<{ articleId: string }>('/', async (req, res) => {
     const likesCount = await ArticleLike.count({ where: { articleId } });
     res.json({ likesCount });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 
-likesRouter.delete<{ articleId: string }>('/', async (req, res) => {
+likesRouter.delete<{ articleId: string }>('/', async (req, res, next) => {
   try {
     const articleId = String(req.params.articleId);
     await ArticleLike.destroy({
@@ -30,8 +29,7 @@ likesRouter.delete<{ articleId: string }>('/', async (req, res) => {
     const likesCount = await ArticleLike.count({ where: { articleId } });
     res.json({ likesCount });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 

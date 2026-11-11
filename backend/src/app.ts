@@ -8,6 +8,7 @@ import articlesRouter from './routers/articles.js';
 import genresRouter from './routers/genres.js';
 import likesRouter from './routers/likes.js';
 import commentsRouter from './routers/comments.js';
+import { errorHandler } from './util/errorHandler.js';
 
 export const app = express();
 
@@ -22,3 +23,5 @@ app.use('/api/articles/:articleId/comments', commentsRouter);
 app.use('/api/articles', articlesRouter);
 app.use('/api/genres', genresRouter);
 app.use('/api/health', (req, res) => res.status(200).json({ status: 'ok' }));
+
+app.use(errorHandler);

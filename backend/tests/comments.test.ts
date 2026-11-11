@@ -326,14 +326,14 @@ describeDatabase('article comments', () => {
       .mockRejectedValueOnce(new Error('lookup failed'));
     await request(app)
       .get(url(articleIds[0]))
-      .expect(500, { error: 'Internal server error' });
+      .expect(500, { status: 500, code: 'INTERNAL_SERVER_ERROR', message: 'Internal server error' });
     lookup.mockRestore();
     vi.spyOn(Comment, 'findAll').mockRejectedValueOnce(
       new Error('read failed')
     );
     await request(app)
       .get(url(articleIds[0]))
-      .expect(500, { error: 'Internal server error' });
+      .expect(500, { status: 500, code: 'INTERNAL_SERVER_ERROR', message: 'Internal server error' });
     vi.spyOn(Comment, 'create').mockRejectedValueOnce(
       new Error('write failed')
     );
@@ -341,7 +341,7 @@ describeDatabase('article comments', () => {
       .post(url(articleIds[0]))
       .set('Authorization', auth(0))
       .send({ text: 'test' })
-      .expect(500, { error: 'Internal server error' });
+      .expect(500, { status: 500, code: 'INTERNAL_SERVER_ERROR', message: 'Internal server error' });
     expect(console.error).toHaveBeenCalledTimes(3);
   });
 

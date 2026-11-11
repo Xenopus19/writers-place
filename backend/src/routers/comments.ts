@@ -13,7 +13,7 @@ const authorInclude: Includeable = {
   attributes: ['id', 'username', 'name', 'avatarUrl'],
 };
 
-commentsRouter.get('/', lookupArticle, async (req, res) => {
+commentsRouter.get('/', lookupArticle, async (req, res, next) => {
   try {
     const comments = await Comment.findAll({
       where: { articleId: req.article.id },
@@ -25,15 +25,14 @@ commentsRouter.get('/', lookupArticle, async (req, res) => {
     });
     res.json(comments);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 
-commentsRouter.post('/', requireAuth, lookupArticle, async (req, res) => {
+commentsRouter.post('/', requireAuth, lookupArticle, async (req, res, next) => {
   const parsed = createCommentSchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.issues });
+    next(parsed.error);
     return;
   }
 
@@ -51,8 +50,7 @@ commentsRouter.post('/', requireAuth, lookupArticle, async (req, res) => {
     }
     res.status(201).json({ data: comment });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 

@@ -1,5 +1,12 @@
 # Backend API
 
+## Error responses
+
+Routes and their middleware forward errors to a central handler. Responses have
+`status`, `code`, and `message` fields, with an optional `errors` array of
+`{ field, message }` entries for validation and uniqueness failures. Unexpected
+errors are logged and return a generic `500` response.
+
 ## Article comments
 
 - `GET /api/articles/:articleId/comments` is public and returns all comments,

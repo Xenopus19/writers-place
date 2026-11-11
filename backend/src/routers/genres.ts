@@ -3,13 +3,12 @@ import { Genre } from '../models/index.js';
 
 const genresRouter = Router();
 
-genresRouter.get('/', async (_req, res) => {
+genresRouter.get('/', async (_req, res, next) => {
   try {
     const genres = await Genre.findAll({ order: [['name', 'ASC']] });
     res.json(genres);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 

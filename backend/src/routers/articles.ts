@@ -11,6 +11,7 @@ import {
 import { requireAuth } from '../util/auth.js';
 import { requireArticle } from '../util/articleLookup.js';
 import { getLikesCounts } from '../util/articleLikes.js';
+import { AppError } from '../util/appError.js';
 import {
   embedArticle,
   embedQuery,
@@ -32,19 +33,14 @@ const genreInclude: Includeable = {
   through: { attributes: [] },
 };
 
-const validateArticleUpdate: RequestHandler = (req, res, next) => {
+const validateArticleUpdate: RequestHandler = (req, _res, next) => {
   const parsed = updateArticleSchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.issues });
+    next(parsed.error);
     return;
   }
   req.articleUpdates = parsed.data;
   next();
-};
-
-const serverError = (res: import('express').Response, error: unknown) => {
-  console.error(error);
-  res.status(500).json({ error: 'Internal server error' });
 };
 
 const genreNames = (genres: Genre[] | undefined): string[] =>
@@ -64,10 +60,10 @@ const findGenresByName = async (names: string[]) => {
   return { rows, unknown };
 };
 
-articlesRouter.get('/', async (req, res) => {
+articlesRouter.get('/', async (req, res, next) => {
   const parsed = listArticlesSchema.safeParse(req.query);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.issues });
+    next(parsed.error);
     return;
   }
 
@@ -106,14 +102,14 @@ articlesRouter.get('/', async (req, res) => {
       }))
     );
   } catch (error) {
-    serverError(res, error);
+    next(error);
   }
 });
 
-articlesRouter.get('/search', async (req, res) => {
+articlesRouter.get('/search', async (req, res, next) => {
   const parsed = searchArticlesSchema.safeParse(req.query);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.issues });
+    next(parsed.error);
     return;
   }
 
@@ -139,24 +135,24 @@ articlesRouter.get('/search', async (req, res) => {
     });
     res.json(ordered);
   } catch (error) {
-    serverError(res, error);
+    next(error);
   }
 });
 
-articlesRouter.get('/:id', requireArticle('id', { include: [genreInclude] }), async (req, res) => {
+articlesRouter.get('/:id', requireArticle('id', { include: [genreInclude] }), async (req, res, next) => {
   try {
     const article = req.article;
     const likesCounts = await getLikesCounts([article.id]);
     res.json({ ...toArticleJson(article), likesCount: likesCounts.get(article.id) ?? 0 });
   } catch (error) {
-    serverError(res, error);
+    next(error);
   }
 });
 
-articlesRouter.post('/', requireAuth, async (req, res) => {
+articlesRouter.post('/', requireAuth, async (req, res, next) => {
   const parsed = createArticleSchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.issues });
+    next(parsed.error);
     return;
   }
 
@@ -164,7 +160,7 @@ articlesRouter.post('/', requireAuth, async (req, res) => {
     const { genres, ...articleData } = parsed.data;
     const { rows, unknown } = await findGenresByName(genres);
     if (unknown.length > 0) {
-      res.status(400).json({ error: `Unknown genres: ${unknown.join(', ')}` });
+      next(AppError.badRequest(`Unknown genres: ${unknown.join(', ')}`));
       return;
     }
 
@@ -175,15 +171,15 @@ articlesRouter.post('/', requireAuth, async (req, res) => {
     const { embedding: _omit, ...data } = created.toJSON();
     res.status(201).json({ data: { ...data, genres: genreNames(rows) } });
   } catch (error) {
-    serverError(res, error);
+    next(error);
   }
 });
 
-articlesRouter.put('/:id', requireAuth, validateArticleUpdate, requireArticle('id', { include: [genreInclude] }), async (req, res) => {
+articlesRouter.put('/:id', requireAuth, validateArticleUpdate, requireArticle('id', { include: [genreInclude] }), async (req, res, next) => {
   try {
     const article = req.article;
     if (article.userId !== req.tokenUser.id) {
-      res.status(403).json({ error: 'Forbidden' });
+      next(new AppError(403, 'FORBIDDEN', 'Forbidden'));
       return;
     }
 
@@ -191,7 +187,7 @@ articlesRouter.put('/:id', requireAuth, validateArticleUpdate, requireArticle('i
     if (genres !== undefined) {
       const { rows, unknown } = await findGenresByName(genres);
       if (unknown.length > 0) {
-        res.status(400).json({ error: `Unknown genres: ${unknown.join(', ')}` });
+        next(AppError.badRequest(`Unknown genres: ${unknown.join(', ')}`));
         return;
       }
       await article.setGenres(rows);
@@ -224,21 +220,21 @@ articlesRouter.put('/:id', requireAuth, validateArticleUpdate, requireArticle('i
     const updated = await article.update({ ...merged, embedding });
     res.json({ data: toArticleJson(updated) });
   } catch (error) {
-    serverError(res, error);
+    next(error);
   }
 });
 
-articlesRouter.delete('/:id', requireAuth, requireArticle('id'), async (req, res) => {
+articlesRouter.delete('/:id', requireAuth, requireArticle('id'), async (req, res, next) => {
   try {
     const article = req.article;
     if (article.userId !== req.tokenUser.id) {
-      res.status(403).json({ error: 'Forbidden' });
+      next(new AppError(403, 'FORBIDDEN', 'Forbidden'));
       return;
     }
     await article.destroy();
     res.status(204).end();
   } catch (error) {
-    serverError(res, error);
+    next(error);
   }
 });
 
