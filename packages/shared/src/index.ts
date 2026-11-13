@@ -35,6 +35,8 @@ export const createCommentSchema = z.object({
 });
 
 export type CreateComment = z.infer<typeof createCommentSchema>;
+export const updateCommentSchema = createCommentSchema;
+export type UpdateComment = z.infer<typeof updateCommentSchema>;
 
 export interface User {
   id: string;

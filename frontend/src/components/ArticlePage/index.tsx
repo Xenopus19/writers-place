@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { getArticle, getArticleComments } from '../../services/articleService';
+import { useUser } from '../UserContext';
 import CommentForm from '../CommentForm';
 import Comment from '../CommentForm/Comment';
 import { Spinner } from '../ui/spinner';
@@ -13,6 +14,7 @@ const formatDate = (value: string) =>
 
 const ArticlePage = () => {
   const { id } = useParams<{ id: string }>();
+  const user = useUser();
 
   const articleQuery = useQuery({
     queryKey: ['articles', id],
@@ -83,6 +85,8 @@ const ArticlePage = () => {
           {comments.map((c) => (
             <Comment
               key={c.id}
+              articleId={id!}
+              isAuthor={c.userId === user?.id}
               comment={{
                 id: c.id,
                 author: c.user?.name,

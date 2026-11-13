@@ -7,10 +7,13 @@ import ArticlePage from './index';
 import { ApiError } from '../../utils/ApiError';
 import { ErrorProvider } from '../ErrorContext';
 import ErrorNotification from '../Error';
+import { useUser } from '../UserContext';
 
 vi.mock('../../utils/api', () => ({
-  default: { get: vi.fn(), post: vi.fn() },
+  default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
 }));
+
+vi.mock('../UserContext', () => ({ useUser: vi.fn() }));
 
 const article = {
   id: 'article-1',
@@ -54,6 +57,13 @@ const renderArticle = () => {
 describe('article comments', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    vi.mocked(useUser).mockReturnValue({
+      id: 'user-1',
+      username: 'ada',
+      name: 'Ada',
+      about: '',
+      avatarUrl: '',
+    });
     vi.mocked(api.get).mockImplementation(async (url) => {
       if (url === '/articles/article-1') return { data: article };
       if (url === '/articles/article-1/comments') return { data: [] };
@@ -123,6 +133,96 @@ describe('article comments', () => {
     await waitFor(() =>
       expect(api.post).toHaveBeenCalledWith('/articles/article-1/comments', { text }),
     );
+  });
+
+  it('lets the author edit a comment inline and refreshes the list', async () => {
+    const updatedComment = { ...comment, text: 'Updated comment' };
+    let displayedComments = [comment];
+    vi.mocked(api.get).mockImplementation(async (url) => {
+      if (url === '/articles/article-1') return { data: article };
+      return { data: displayedComments };
+    });
+    vi.mocked(api.put).mockResolvedValue({ data: { data: updatedComment } });
+
+    renderArticle();
+    expect(await screen.findByText('Hello world')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    fireEvent.change(screen.getByLabelText('Edit comment'), {
+      target: { value: '  Updated comment  ' },
+    });
+    displayedComments = [updatedComment];
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    await waitFor(() =>
+      expect(api.put).toHaveBeenCalledWith(
+        '/articles/article-1/comments/comment-1',
+        { text: 'Updated comment' },
+      ),
+    );
+    expect(await screen.findByText('Updated comment')).toBeInTheDocument();
+  });
+
+  it('validates edited text before sending an update', async () => {
+    vi.mocked(api.get).mockImplementation(async (url) => {
+      if (url === '/articles/article-1') return { data: article };
+      return { data: [comment] };
+    });
+    renderArticle();
+    expect(await screen.findByText('Hello world')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    fireEvent.change(screen.getByLabelText('Edit comment'), {
+      target: { value: '   ' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Enter a comment');
+    expect(api.put).not.toHaveBeenCalled();
+  });
+
+  it('asks before permanently deleting an author comment', async () => {
+    let displayedComments = [comment];
+    vi.mocked(api.get).mockImplementation(async (url) => {
+      if (url === '/articles/article-1') return { data: article };
+      return { data: displayedComments };
+    });
+    vi.mocked(api.delete).mockResolvedValue({ data: undefined });
+    const confirm = vi.spyOn(window, 'confirm')
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true);
+    renderArticle();
+
+    expect(await screen.findByText('Hello world')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    expect(api.delete).not.toHaveBeenCalled();
+    displayedComments = [];
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+
+    await waitFor(() =>
+      expect(api.delete).toHaveBeenCalledWith(
+        '/articles/article-1/comments/comment-1',
+      ),
+    );
+    expect(confirm).toHaveBeenCalledTimes(2);
+    expect(await screen.findByText(/No comments yet/)).toBeInTheDocument();
+  });
+
+  it('does not show comment controls to another user', async () => {
+    vi.mocked(useUser).mockReturnValue({
+      id: 'user-2',
+      username: 'grace',
+      name: 'Grace',
+      about: '',
+      avatarUrl: '',
+    });
+    vi.mocked(api.get).mockImplementation(async (url) => {
+      if (url === '/articles/article-1') return { data: article };
+      return { data: [comment] };
+    });
+    renderArticle();
+
+    expect(await screen.findByText('Hello world')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
   });
 
   it('keeps the draft and allows retry after a failed request', async () => {

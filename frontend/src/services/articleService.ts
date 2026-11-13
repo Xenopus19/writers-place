@@ -1,5 +1,5 @@
 import api from "../utils/api";
-import type { CreateComment } from "@writers-place/shared";
+import type { CreateComment, UpdateComment } from "@writers-place/shared";
 import type { Article, Comment } from "../types";
 
 export const getArticle = async (id: string): Promise<Article> => {
@@ -23,4 +23,23 @@ export const createArticleComment = async (
     comment,
   );
   return data.data;
+};
+
+export const updateArticleComment = async (
+  articleId: string,
+  commentId: string,
+  comment: UpdateComment,
+): Promise<Comment> => {
+  const { data } = await api.put<{ data: Comment }>(
+    `/articles/${articleId}/comments/${commentId}`,
+    comment,
+  );
+  return data.data;
+};
+
+export const deleteArticleComment = async (
+  articleId: string,
+  commentId: string,
+): Promise<void> => {
+  await api.delete(`/articles/${articleId}/comments/${commentId}`);
 };
