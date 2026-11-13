@@ -1,9 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { UniqueConstraintError } from 'sequelize';
 import { ZodError } from 'zod';
 import { AppError } from './appError.js';
 
-export function errorHandler(err: unknown, req: Request, res: Response, next: NextFunction) {
+export function errorHandler(err: unknown, _req: Request, res: Response, _next: NextFunction) {
+  void _next;
+
   if (err instanceof AppError) {
     return res.status(err.status).json({
       status: err.status,

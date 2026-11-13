@@ -35,6 +35,10 @@ Single workspace: `npm run <script> -w backend` / `-w frontend` / `-w packages/s
 - In frontend don't use fetch for requests. Always use axios or api object created via axios for requests.
 - Import shared logic only via workspace alias `@writers-place/shared` (never relative paths to `packages/shared`)
 
+## Workflow & Verification
+- After making any code edits, ALWAYS run `npm run lint` to verify there are no ESLint or TypeScript formatting errors before finishing your response.
+- Fix any lint errors or warnings introduced by your changes immediately.
+
 ## Folder Structure
 
 ```

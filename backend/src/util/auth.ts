@@ -4,11 +4,9 @@ import { JWT_SECRET } from './config.js';
 import type { TokenUser } from '../routers/login.js';
 import { AppError } from './appError.js';
 
-declare global {
-  namespace Express {
-    interface Request {
-      tokenUser: TokenUser;
-    }
+declare module 'express-serve-static-core' {
+  interface Request {
+    tokenUser: TokenUser;
   }
 }
 
