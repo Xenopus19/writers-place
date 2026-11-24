@@ -169,8 +169,8 @@ export default function ArticleSearch({ onError }: { onError?: (m: string, c?: u
           value={s.query}
           maxLength={500}
           onChange={(e) => s.onQueryChange(e.target.value)}
-          placeholder="Про що ви хочете почитати? Наприклад: «самотність у великому місті»"
-          aria-label="Пошук статей"
+          placeholder="What do you want to read about? For example: 'loneliness in a big city'"
+          aria-label="Search articles"
           className="flex-1 rounded-full border border-stone-300 bg-white px-5 py-3 outline-none focus:ring-2 focus:ring-[#8a9470]"
         />
         <button
@@ -178,7 +178,7 @@ export default function ArticleSearch({ onError }: { onError?: (m: string, c?: u
           disabled={s.status === "loading"}
           className="rounded-full bg-[#434a37] px-6 py-3 text-white disabled:opacity-60"
         >
-          Шукати
+          Search
         </button>
       </form>
 
@@ -187,7 +187,7 @@ export default function ArticleSearch({ onError }: { onError?: (m: string, c?: u
         {s.status === "waiting" && (
           <div>
             <p className="text-sm text-stone-600">
-              Шукатимемо через {secondsLeft} с. Натисніть «Шукати», щоб не чекати.
+              Searching in {secondsLeft} s. Click "Search" to skip the wait.
             </p>
             <div className="mt-1 h-1 w-full overflow-hidden rounded bg-stone-200">
               <div
@@ -200,13 +200,13 @@ export default function ArticleSearch({ onError }: { onError?: (m: string, c?: u
         {s.status === "loading" && (
           <p className="flex items-center gap-2 text-sm text-stone-600">
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-stone-300 border-t-[#434a37]" />
-            Шукаємо статті…
+            Searching articles…
           </p>
         )}
       </div>
 
       {/* Фільтр за жанром (один жанр, як в API) */}
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Жанри">
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Genres">
         {genres.map((g) => (
           <button
             key={g}
@@ -224,7 +224,7 @@ export default function ArticleSearch({ onError }: { onError?: (m: string, c?: u
         ))}
         {(s.genre || s.query) && (
           <button type="button" onClick={s.reset} className="px-2 text-sm text-stone-500 underline">
-            Скинути
+            Reset
           </button>
         )}
       </div>
@@ -233,7 +233,7 @@ export default function ArticleSearch({ onError }: { onError?: (m: string, c?: u
       <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {s.status === "success" && s.results.length === 0 && (
           <p className="col-span-full text-stone-600">
-            Нічого не знайдено. Спробуйте інші слова або приберіть фільтр за жанром.
+            Nothing found. Try other topics or remove the genre filter.
           </p>
         )}
         {s.results.map((a) => (
