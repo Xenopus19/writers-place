@@ -18,6 +18,7 @@ const AppLayout = () => {
         <nav className="site-nav">
           <Link to="/">Home</Link>
           <Link to="/articles">Explore</Link>
+         <Link to="/search">Search</Link>
           {user && <Link to="/profile">Profile</Link>}
         </nav>
 

@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './App.css'
 import AppLayout from './AppLayout'
 import ArticlePage from './components/ArticlePage'
+import ArticleSearch from './components/ArticleSearch'
 import ArticlesCatalog from './components/ArticlesCatalog'
 import LogIn from './components/Login'
 import MainPage from './components/MainPage'
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
     children: [
       { path: '/', element: <MainPage /> },
       { path: '/articles', element: <ArticlesCatalog /> },
+      { path: '/search', element: <ArticleSearch /> },
       { path: '/articles/:id', element: <ArticlePage /> },
       { path: '/login', element: <LogIn /> },
       { path: '/signup', element: <SignUp /> },
