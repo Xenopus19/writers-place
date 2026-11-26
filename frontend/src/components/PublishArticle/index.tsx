@@ -1,7 +1,157 @@
+import axios from "axios";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
+import useCreateArticle from "../../hooks/useCreateArticle";
+
+const publishArticleSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(1, "Title is required.")
+    .max(255, "Title must be 255 characters or fewer."),
+  description: z
+    .string()
+    .trim()
+    .min(1, "Description is required.")
+    .max(500, "Description must be 500 characters or fewer."),
+  text: z.string().trim().min(1, "Article text is required."),
+});
+
+type PublishArticleFormData = z.infer<typeof publishArticleSchema>;
+
+const getServerErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError<{ error?: unknown }>(error)) {
+    const message = error.response?.data?.error;
+    if (typeof message === "string" && message.trim()) {
+      return message;
+    }
+  }
+
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  return "Unable to publish the article.";
+};
+
 const PublishArticle = () => {
-    return (
-        <>PublishArticle</>
-    )
-}
+  const createArticleMutation = useCreateArticle();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<PublishArticleFormData>({
+    resolver: zodResolver(publishArticleSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      text: "",
+    },
+    shouldFocusError: true,
+  });
+
+  return (
+    <div className="mx-auto w-full max-w-2xl px-4 py-8">
+      <h1 className="mb-6 text-3xl font-semibold">Publish an article</h1>
+
+      <form
+        className="space-y-6"
+        onSubmit={handleSubmit((data) =>
+          createArticleMutation.mutate(data, {
+            onSuccess: () => reset(),
+          }),
+        )}
+      >
+        <div className="space-y-2">
+          <Label htmlFor="article-title">Title</Label>
+          <Input
+            id="article-title"
+            className="h-11 text-base md:text-base"
+            aria-invalid={Boolean(errors.title)}
+            aria-describedby={errors.title ? "article-title-error" : undefined}
+            {...register("title")}
+          />
+          {errors.title && (
+            <p
+              id="article-title-error"
+              role="alert"
+              className="text-sm text-destructive"
+            >
+              {errors.title.message}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="article-description">Description</Label>
+          <Input
+            id="article-description"
+            className="h-11 text-base md:text-base"
+            aria-invalid={Boolean(errors.description)}
+            aria-describedby={
+              errors.description ? "article-description-error" : undefined
+            }
+            {...register("description")}
+          />
+          {errors.description && (
+            <p
+              id="article-description-error"
+              role="alert"
+              className="text-sm text-destructive"
+            >
+              {errors.description.message}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="article-text">Article text</Label>
+          <Textarea
+            id="article-text"
+            className="min-h-40 text-base md:text-base"
+            aria-invalid={Boolean(errors.text)}
+            aria-describedby={errors.text ? "article-text-error" : undefined}
+            {...register("text")}
+          />
+          {errors.text && (
+            <p
+              id="article-text-error"
+              role="alert"
+              className="text-sm text-destructive"
+            >
+              {errors.text.message}
+            </p>
+          )}
+        </div>
+
+        {createArticleMutation.isError && (
+          <p role="alert" className="text-sm text-destructive">
+            {getServerErrorMessage(createArticleMutation.error)}
+          </p>
+        )}
+
+        {createArticleMutation.isSuccess && (
+          <p role="status" className="text-sm text-foreground">
+            Article published successfully.
+          </p>
+        )}
+
+        <Button
+          type="submit"
+          disabled={createArticleMutation.isPending}
+          className="w-full sm:w-auto"
+        >
+          {createArticleMutation.isPending ? "Publishing…" : "Publish article"}
+        </Button>
+      </form>
+    </div>
+  );
+};
 
 export default PublishArticle

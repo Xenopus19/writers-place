@@ -1,4 +1,6 @@
 
+import { useState } from 'react'
+import { Button } from './components/ui/button'
 import { Link, Outlet } from 'react-router-dom'
 import { useUser } from './components/UserContext'
 import useLogin from './hooks/useLogin'
@@ -6,6 +8,7 @@ import useLogin from './hooks/useLogin'
 const AppLayout = () => {
   const user = useUser()
   const { logout } = useLogin()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
     <div className="site-layout">
@@ -15,37 +18,53 @@ const AppLayout = () => {
           writers<span>place.</span>
         </Link>
 
-        <nav className="site-nav">
-          <Link to="/">Home</Link>
-          <Link to="/articles">Explore</Link>
-          {user && <Link to="/profile">Profile</Link>}
-        </nav>
+        <button
+          type="button"
+          className="menu-toggle"
+          aria-expanded={isMenuOpen}
+          aria-controls="primary-navigation"
+          onClick={() => setIsMenuOpen((open) => !open)}
+        >
+          {isMenuOpen ? 'Close' : 'Menu'}
+        </button>
 
-        <div className="header-actions">
-          {user ? (
-            <>
-              <Link to="/publish" className="publish-link">
-                + Write
-              </Link>
+        <div
+          className={`site-menu${isMenuOpen ? ' is-open' : ''}`}
+          id="primary-navigation"
+        >
+          <nav className="site-nav">
+            <Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link>
+            <Link to="/articles" onClick={() => setIsMenuOpen(false)}>Explore</Link>
+            {user && <Link to="/profile" onClick={() => setIsMenuOpen(false)}>Profile</Link>}
+          </nav>
 
-              <button
-                onClick={logout}
-                className="logout-button"
-              >
-                Log out
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" className="login-link">
-                Log in
-              </Link>
-
-              <Link to="/signup" className="signup-button">
-                Get started
-              </Link>
-            </>
-          )}
+          <div className="header-actions">
+            {user ? (
+              <>
+                <Button asChild>
+                  <Link to="/publish" onClick={() => setIsMenuOpen(false)}>+ Write</Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsMenuOpen(false)
+                    logout()
+                  }}
+                >
+                  Log out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="login-link" onClick={() => setIsMenuOpen(false)}>
+                  Log in
+                </Link>
+                <Button asChild>
+                  <Link to="/signup" onClick={() => setIsMenuOpen(false)}>Get started</Link>
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </header>
 

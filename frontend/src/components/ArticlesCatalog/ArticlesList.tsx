@@ -1,21 +1,25 @@
-import { ArticleCard } from './ArticleCard';
+import ArticleCard from '../ArticleCard'
+import useArticles from '../../hooks/useArticles'
 
-interface Article {
-  id: string | number;
-  title: string;
-  description: string;
-  genres?: string[];
-  likesCount?: number;
-  createdAt?: string;
-  coverUrl?: string;
-}
+const defaultArticleImage =
+  'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=800'
 
-interface ArticlesListProps {
-  articles: Article[];
-}
+export const ArticlesList = () => {
+  const { data: articles = [], error, isError, isLoading } = useArticles()
 
-export const ArticlesList = ({ articles }: ArticlesListProps) => {
-  if (!articles || articles.length === 0) {
+  if (isLoading) {
+    return <p role="status">Loading articles…</p>
+  }
+
+  if (isError) {
+    return (
+      <p role="alert">
+        {error instanceof Error ? error.message : 'Unable to load articles.'}
+      </p>
+    )
+  }
+
+  if (articles.length === 0) {
     return (
       <div className="empty-articles">
         <p>No articles found.</p>
@@ -26,7 +30,14 @@ export const ArticlesList = ({ articles }: ArticlesListProps) => {
   return (
     <div className="catalog-grid">
       {articles.map((article) => (
-        <ArticleCard key={article.id} {...article} />
+        <ArticleCard
+          key={article.id}
+          title={article.title}
+          excerpt={article.description}
+          image={defaultArticleImage}
+          tag=""
+          href={`/articles/${article.id}`}
+        />
       ))}
     </div>
   );

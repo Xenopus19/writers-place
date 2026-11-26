@@ -10,7 +10,6 @@ const Login = () => {
     try {
       await login(data);
     } catch (error: unknown) {
-      // Handle error
     }
   };
 

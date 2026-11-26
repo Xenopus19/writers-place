@@ -29,6 +29,7 @@ const LoginForm = ({ onSubmit }: LoginFormProps) => {
         <Field>
           <FieldLabel className="text-[#2d3a2e] font-medium">Username</FieldLabel>
           <Input
+            aria-invalid={!!form.formState.errors.username}
             autoComplete="username"
             placeholder="Your username."
             className="border-[#e2dfd7] bg-[#fcfbf9] text-[#2d3a2e] placeholder-[#9ca3af] focus-visible:border-[#374333] focus-visible:ring-[#374333]/20 rounded-xl py-2.5 transition-all"
@@ -47,6 +48,7 @@ const LoginForm = ({ onSubmit }: LoginFormProps) => {
         <Field>
           <FieldLabel className="text-[#2d3a2e] font-medium">Password</FieldLabel>
           <Input
+            aria-invalid={!!form.formState.errors.password}
             autoComplete="current-password"
             type="password"
             placeholder="Your password."

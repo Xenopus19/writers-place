@@ -1,6 +1,7 @@
 
 import { Link } from 'react-router-dom'
 import { useUser } from './UserContext'
+import ArticleCard from './ArticleCard'
 
 const categories = [
   'All stories',
@@ -172,30 +173,14 @@ const MainPage = () => {
 
         <div className="stories-grid">
           {features.map((item) => (
-            <Link
-              to="/articles"
-              className="story-card"
+            <ArticleCard
               key={item.number}
-            >
-              <div className="story-image-wrapper">
-                <img src={item.image} alt={item.title} />
-                <span className="story-number">{item.number}</span>
-              </div>
-
-              <div className="story-info">
-                <span className="story-category">
-                  {item.category}
-                </span>
-
-                <h3>{item.title}</h3>
-
-                <p>{item.description}</p>
-
-                <span className="story-read">
-                  Explore stories <span>↗</span>
-                </span>
-              </div>
-            </Link>
+              title={item.title}
+              excerpt={item.description}
+              image={item.image}
+              tag={item.category}
+              href="/articles"
+            />
           ))}
         </div>
       </section>
