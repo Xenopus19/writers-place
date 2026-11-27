@@ -1,10 +1,14 @@
+import LikeButton from './LikeButton';
+
 interface ArticleProps {
   article: {
+    id: string;
     title: string;
     content?: string;
     description?: string;
     genres?: string[];
     likesCount?: number;
+    likedByMe?: boolean;
     createdAt?: string;
     author?: string;
     coverUrl?: string;
@@ -18,7 +22,7 @@ const Article = ({ article }: ArticleProps) => {
         <span className="article-category-tag">
           {article.genres?.join(', ') || 'Story'}
         </span>
-        <span className="meta-dot">•</span>
+        <span className="meta-dot" aria-hidden="true">•</span>
         <span>{article.createdAt || '2026-01-01'}</span>
       </div>
 
@@ -44,9 +48,11 @@ const Article = ({ article }: ArticleProps) => {
       </div>
 
       <div className="article-actions-bar">
-        <button className="like-button-aesthetic">
-          <span>♥</span> Like story ({article.likesCount ?? 0})
-        </button>
+        <LikeButton
+          articleId={article.id}
+          likesCount={article.likesCount ?? 0}
+          liked={article.likedByMe ?? false}
+        />
       </div>
     </article>
   );

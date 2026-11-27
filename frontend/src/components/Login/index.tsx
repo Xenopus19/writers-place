@@ -3,6 +3,7 @@ import useLogin from "../../hooks/useLogin";
 import LoginForm from "./LoginForm";
 import type { LoginInfoType } from "./LoginSchema";
 import useError from "../../hooks/useError";
+import { ApiError } from "../../utils/ApiError";
 
 const Login = () => {
   const { login } = useLogin();
@@ -12,7 +13,12 @@ const Login = () => {
     try {
       await login(data);
     } catch (error) {
-      reportError("Log in failed. Please try again.", error);
+      reportError(
+        error instanceof ApiError && error.code === "INVALID_CREDENTIALS"
+          ? "Incorrect username or password. Please try again."
+          : "Log in failed. Please try again.",
+        error,
+      );
     }
   };
 
@@ -37,7 +43,6 @@ const Login = () => {
           </p>
         </div>
 
-        {/* Форма */}
         <LoginForm onSubmit={handleLogin} />
 
       </section>

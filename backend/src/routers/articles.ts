@@ -1,14 +1,14 @@
 import { Router, type RequestHandler } from 'express';
 import type { Includeable } from 'sequelize';
 import type { z } from 'zod';
-import { Article, Genre } from '../models/index.js';
+import { Article, ArticleLike, Genre } from '../models/index.js';
 import {
   createArticleSchema,
   listArticlesSchema,
   searchArticlesSchema,
   updateArticleSchema,
 } from '../schemas/articleSchema.js';
-import { requireAuth } from '../util/auth.js';
+import { getOptionalTokenUser, requireAuth } from '../util/auth.js';
 import { requireArticle } from '../util/articleLookup.js';
 import { getLikesCounts } from '../util/articleLikes.js';
 import { AppError } from '../util/appError.js';
@@ -143,7 +143,17 @@ articlesRouter.get('/:id', requireArticle('id', { include: [genreInclude] }), as
   try {
     const article = req.article;
     const likesCounts = await getLikesCounts([article.id]);
-    res.json({ ...toArticleJson(article), likesCount: likesCounts.get(article.id) ?? 0 });
+    const tokenUser = getOptionalTokenUser(req);
+    const likedByMe = tokenUser
+      ? (await ArticleLike.count({
+          where: { articleId: article.id, userId: tokenUser.id },
+        })) > 0
+      : false;
+    res.json({
+      ...toArticleJson(article),
+      likesCount: likesCounts.get(article.id) ?? 0,
+      likedByMe,
+    });
   } catch (error) {
     next(error);
   }

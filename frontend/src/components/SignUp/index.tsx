@@ -7,6 +7,7 @@ import useLogin from "../../hooks/useLogin";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useError from "../../hooks/useError";
+import { ApiError } from "../../utils/ApiError";
 
 const SignUp = () => {
   const uploadImageMutation = useUploadImage();
@@ -27,10 +28,14 @@ const SignUp = () => {
       await login({ username: data.username, password: data.password });
     } catch (error) {
       setAccountCreated(created);
+      const usernameTaken =
+        !created && error instanceof ApiError && error.code === "RESOURCE_EXISTS";
       reportError(
         created
           ? "Your account was created, but automatic login failed."
-          : "Sign up failed. Please try again.",
+          : usernameTaken
+            ? "This username is already taken. Please choose another one."
+            : "Sign up failed. Please try again.",
         error,
       );
     }
@@ -40,13 +45,13 @@ const SignUp = () => {
     <div className="bg-[#fcfbf9]">
       <section className="mx-auto max-w-xl overflow-hidden rounded-3xl border border-[#e8e5de] bg-white p-6 sm:p-8">
         <div>
-          <p className="mb-5 text-center text-2xl font-bold text-[#2d3a2e]">
+          <h1 className="mb-5 text-center text-2xl font-bold text-[#2d3a2e]">
             Create account
-          </p>
+          </h1>
         </div>
         <SignUpForm onSubmit={handleSubmit} disabled={accountCreated} />
         {accountCreated && (
-          <p className="mx-auto mt-4 max-w-md text-sm text-[#73746a]">
+          <p className="mx-auto mt-4 max-w-md text-sm text-[#636459]">
             Your account was created. <Link className="underline" to="/login">Log in</Link> to continue.
           </p>
         )}

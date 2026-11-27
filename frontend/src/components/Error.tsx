@@ -17,7 +17,7 @@ const Error = () => {
         size="icon"
         aria-label="Dismiss error"
         onClick={dismissError}
-        className="-m-2 size-8 shrink-0 text-[#73746a] hover:bg-[#f7f6f0] hover:text-[#303328]"
+        className="-m-2 size-8 shrink-0 text-[#636459] hover:bg-[#f7f6f0] hover:text-[#303328]"
       >
         <RiCloseLine aria-hidden="true" className="size-4" />
       </Button>

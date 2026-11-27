@@ -38,7 +38,7 @@ const ArticlePage = () => {
     <div className="article-page-container">
       {articleQuery.isPending && (
         <div className="flex justify-center py-10">
-          <Spinner className="size-8 text-[#899273]" />
+          <Spinner className="size-8 text-[#5f6a4b]" />
         </div>
       )}
       {articleQuery.isError && (
@@ -51,23 +51,25 @@ const ArticlePage = () => {
       {article && (
         <Article
           article={{
+            id: article.id,
             title: article.title,
             description: article.description,
             content: article.text,
             genres: article.genres,
             likesCount: article.likesCount,
+            likedByMe: article.likedByMe,
             createdAt: formatDate(article.createdAt),
           }}
         />
       )}
 
       <section className="comments-section-wrapper">
-        <h3>Discussion</h3>
+        <h2>Discussion</h2>
 
         <div className="comments-list">
           {commentsQuery.isPending && (
             <div className="flex justify-center py-6">
-              <Spinner className="size-6 text-[#899273]" />
+              <Spinner className="size-6 text-[#5f6a4b]" />
             </div>
           )}
           {commentsQuery.isError && (
@@ -78,7 +80,7 @@ const ArticlePage = () => {
             </div>
           )}
           {commentsQuery.isSuccess && comments.length === 0 && (
-            <p className="py-6 text-center text-sm text-[#73746a]">
+            <p className="py-6 text-center text-sm text-[#636459]">
               No comments yet. Be the first to share your thoughts.
             </p>
           )}

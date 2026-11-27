@@ -61,11 +61,11 @@ const CommentForm = ({ articleId }: { articleId: string }) => {
         </p>
       )}
       {mutation.isError && unauthorized && (
-        <p className="text-sm text-[#73746a]">
+        <p className="text-sm text-[#636459]">
           Please <Link to="/login" className="underline">log in</Link> to comment.
         </p>
       )}
-      <Button type="submit" disabled={mutation.isPending}>
+      <Button type="submit" disabled={mutation.isPending} focusableWhenDisabled>
         {mutation.isPending ? 'Sending...' : 'Send'}
       </Button>
     </form>

@@ -3,6 +3,8 @@
 // Схема: ввід → кнопка «Шукати» / Enter / debounce 5 с → запит на сервер → результат.
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import useError from "../hooks/useError";
 
 /* ---------- Типи (відповідають JSON бекенду) ---------- */
 export interface Article {
@@ -144,7 +146,9 @@ export function useArticleSearch(onError?: (message: string, cause?: unknown) =>
 /* ---------- Компонент ---------- */
 // onError: передайте reportError з useError(), щоб помилки показувались єдиним способом:
 //   const { reportError } = useError();  <ArticleSearch onError={reportError} />
-export default function ArticleSearch({ onError }: { onError?: (m: string, c?: unknown) => void }) {
+export default function ArticleSearch({ onError: onErrorProp }: { onError?: (m: string, c?: unknown) => void }) {
+  const { reportError } = useError();
+  const onError = onErrorProp ?? reportError;
   const s = useArticleSearch(onError);
   const [genres, setGenres] = useState<string[]>([]);
   const secondsLeft = Math.ceil((1 - s.progress) * (DEBOUNCE_MS / 1000));
@@ -156,6 +160,7 @@ export default function ArticleSearch({ onError }: { onError?: (m: string, c?: u
 
   return (
     <section className="mx-auto max-w-5xl px-6 py-10">
+      <h1 className="mb-6 font-serif text-4xl font-normal text-[#303328]">Search articles</h1>
       <form
         role="search"
         onSubmit={(e) => {
@@ -223,7 +228,7 @@ export default function ArticleSearch({ onError }: { onError?: (m: string, c?: u
           </button>
         ))}
         {(s.genre || s.query) && (
-          <button type="button" onClick={s.reset} className="px-2 text-sm text-stone-500 underline">
+          <button type="button" onClick={s.reset} className="px-2 text-sm text-stone-600 underline">
             Reset
           </button>
         )}
@@ -237,16 +242,18 @@ export default function ArticleSearch({ onError }: { onError?: (m: string, c?: u
           </p>
         )}
         {s.results.map((a) => (
-          <a
+          <Link
             key={a.id}
-            href={`/articles/${a.id}`}
+            to={`/articles/${a.id}`}
             className="rounded-xl border border-stone-200 bg-[#fcfaf8] p-4"
           >
-            <p className="text-xs text-stone-500">{a.genres.join(", ")}</p>
-            <h3 className="mt-1 font-serif text-lg">{a.title}</h3>
+            <p className="text-xs text-stone-600">{a.genres.join(", ")}</p>
+            <h2 className="mt-1 font-serif text-lg">{a.title}</h2>
             <p className="mt-1 text-sm text-stone-600">{a.description}</p>
-            <p className="mt-3 text-xs text-stone-500">♥ {a.likesCount}</p>
-          </a>
+            <p className="mt-3 text-xs text-stone-600">
+              <span aria-hidden="true">♥</span> {a.likesCount} likes
+            </p>
+          </Link>
         ))}
       </div>
     </section>

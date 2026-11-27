@@ -17,7 +17,7 @@ const UserPage = () => {
         <div className="profile-avatar-wrapper">
           <img
             src={user.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500'}
-            alt={user.username}
+            alt={`Profile picture of ${user.name || user.username}`}
             className="profile-avatar"
           />
         </div>
@@ -46,7 +46,7 @@ const UserPage = () => {
         <div className="empty-articles">
           <p>You haven't published any stories yet.</p>
           <Link to="/publish" className="button-dark" style={{ marginTop: '15px', display: 'inline-flex' }}>
-            Write your first story ↗
+            Write your first story <span aria-hidden="true">↗</span>
           </Link>
         </div>
       </div>

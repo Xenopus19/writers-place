@@ -93,7 +93,7 @@ describe('article comments', () => {
         text: 'Hello world',
       }),
     );
-    expect(screen.getByRole('button', { name: 'Sending...' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Sending...' })).toHaveAttribute('aria-disabled', 'true');
     expect(screen.getByLabelText('Comment')).toBeDisabled();
     expect(api.post).toHaveBeenCalledTimes(1);
 

@@ -1,5 +1,5 @@
 
-import { Link, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet } from 'react-router-dom'
 import { useUser } from './components/UserContext'
 import useLogin from './hooks/useLogin'
 
@@ -9,17 +9,23 @@ const AppLayout = () => {
 
   return (
     <div className="site-layout">
+      <a
+        href="#main-content"
+        className="sr-only z-[200] rounded bg-[#454d3b] px-5 py-3 text-sm text-white focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
+      >
+        Skip to main content
+      </a>
 
       <header className="site-header">
         <Link to="/" className="site-logo">
           writers<span>place.</span>
         </Link>
 
-        <nav className="site-nav">
-          <Link to="/">Home</Link>
-          <Link to="/articles">Explore</Link>
-         <Link to="/search">Search</Link>
-          {user && <Link to="/profile">Profile</Link>}
+        <nav className="site-nav" aria-label="Main">
+          <NavLink to="/" end>Home</NavLink>
+          <NavLink to="/articles" end>Explore</NavLink>
+          <NavLink to="/search">Search</NavLink>
+          {user && <NavLink to="/profile">Profile</NavLink>}
         </nav>
 
         <div className="header-actions">
@@ -30,6 +36,7 @@ const AppLayout = () => {
               </Link>
 
               <button
+                type="button"
                 onClick={logout}
                 className="logout-button"
               >
@@ -50,7 +57,7 @@ const AppLayout = () => {
         </div>
       </header>
 
-      <main className="site-main">
+      <main id="main-content" tabIndex={-1} className="site-main outline-none">
         <Outlet />
       </main>
 
@@ -62,7 +69,7 @@ const AppLayout = () => {
 
           <p>A little space for big ideas.</p>
 
-          <Link to="/articles">Explore stories ↗</Link>
+          <Link to="/articles">Explore stories <span aria-hidden="true">↗</span></Link>
         </div>
 
         <div className="footer-bottom">

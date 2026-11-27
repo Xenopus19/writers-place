@@ -24,10 +24,21 @@ export interface ApiErrorResponse {
 }
 
 export const baseSignUpSchema = z.object({
-  username: z.string().trim().min(3).max(32),
-  name: z.string().trim().min(1).max(100),
-  about: z.string().max(1000).optional(),
-  password: z.string().min(5).max(72),
+  username: z
+    .string()
+    .trim()
+    .min(3, 'Username must be at least 3 characters.')
+    .max(32, 'Username must be at most 32 characters.'),
+  name: z
+    .string()
+    .trim()
+    .min(1, 'Enter your name.')
+    .max(100, 'Name must be at most 100 characters.'),
+  about: z.string().max(1000, 'About must be at most 1000 characters.').optional(),
+  password: z
+    .string()
+    .min(5, 'Password must be at least 5 characters.')
+    .max(72, 'Password must be at most 72 characters.'),
 });
 
 export const createCommentSchema = z.object({
@@ -37,6 +48,10 @@ export const createCommentSchema = z.object({
 export type CreateComment = z.infer<typeof createCommentSchema>;
 export const updateCommentSchema = createCommentSchema;
 export type UpdateComment = z.infer<typeof updateCommentSchema>;
+
+export interface ArticleLikes {
+  likesCount: number;
+}
 
 export interface User {
   id: string;

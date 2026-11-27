@@ -256,7 +256,26 @@ describeDatabase('article likes', () => {
     const detail = await request(app)
       .get(`/api/articles/${articleIds[0]}`)
       .expect(200);
-    expect(detail.body).toMatchObject({ id: articleIds[0], likesCount: 2 });
+    expect(detail.body).toMatchObject({
+      id: articleIds[0],
+      likesCount: 2,
+      likedByMe: false,
+    });
+    const likedDetail = await request(app)
+      .get(`/api/articles/${articleIds[0]}`)
+      .set('Authorization', auth(1))
+      .expect(200);
+    expect(likedDetail.body).toMatchObject({ likesCount: 2, likedByMe: true });
+    const notLikedDetail = await request(app)
+      .get(`/api/articles/${articleIds[0]}`)
+      .set('Authorization', auth(2))
+      .expect(200);
+    expect(notLikedDetail.body.likedByMe).toBe(false);
+    const invalidTokenDetail = await request(app)
+      .get(`/api/articles/${articleIds[0]}`)
+      .set('Authorization', 'Bearer invalid')
+      .expect(200);
+    expect(invalidTokenDetail.body.likedByMe).toBe(false);
 
     embeddings.findNearestArticles.mockResolvedValue([
       { id: articleIds[2] },

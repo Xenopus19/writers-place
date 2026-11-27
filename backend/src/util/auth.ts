@@ -10,7 +10,20 @@ declare module 'express-serve-static-core' {
   }
 }
 
-export const requireAuth = (req: Request, _res: Response, next: NextFunction) => {
+export const getOptionalTokenUser = (req: Request): TokenUser | null => {
+  const header = req.headers.authorization;
+  if (!header?.startsWith('Bearer ')) {
+    return null;
+  }
+
+  try {
+    return jwt.verify(header.slice(7), JWT_SECRET) as TokenUser;
+  } catch {
+    return null;
+  }
+};
+
+export const requireAuth =(req: Request, _res: Response, next: NextFunction) => {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
     next(new AppError(401, 'UNAUTHORIZED', 'Token missing'));

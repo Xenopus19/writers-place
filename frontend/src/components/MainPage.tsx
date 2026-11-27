@@ -70,11 +70,11 @@ const MainPage = () => {
 
           <div className="hero-buttons">
             <Link to="/articles" className="button-dark">
-              Explore stories <span>↗</span>
+              Explore stories <span aria-hidden="true">↗</span>
             </Link>
 
             <Link to="/publish" className="button-text">
-              Start writing <span>→</span>
+              Start writing <span aria-hidden="true">→</span>
             </Link>
           </div>
 
@@ -101,7 +101,7 @@ const MainPage = () => {
           </div>
 
           <div className="hero-image-note">
-            <span>✳</span>
+            <span aria-hidden="true">✳</span>
             Read. Write. Connect.
           </div>
         </div>
@@ -138,7 +138,7 @@ const MainPage = () => {
           </div>
 
           <Link to="/articles" className="view-all">
-            All articles ↗
+            All articles <span aria-hidden="true">↗</span>
           </Link>
         </div>
 
@@ -150,7 +150,7 @@ const MainPage = () => {
               className="category-pill"
             >
               {category}
-              <span>↗</span>
+              <span aria-hidden="true">↗</span>
             </Link>
           ))}
         </div>
@@ -166,7 +166,7 @@ const MainPage = () => {
           </div>
 
           <Link to="/articles" className="view-all">
-            Discover more ↗
+            Discover more <span aria-hidden="true">↗</span>
           </Link>
         </div>
 
@@ -178,7 +178,7 @@ const MainPage = () => {
               key={item.number}
             >
               <div className="story-image-wrapper">
-                <img src={item.image} alt={item.title} />
+                <img src={item.image} alt="" />
                 <span className="story-number">{item.number}</span>
               </div>
 
@@ -192,7 +192,7 @@ const MainPage = () => {
                 <p>{item.description}</p>
 
                 <span className="story-read">
-                  Explore stories <span>↗</span>
+                  Explore stories <span aria-hidden="true">↗</span>
                 </span>
               </div>
             </Link>
@@ -203,7 +203,7 @@ const MainPage = () => {
       {/* CALL TO ACTION */}
 
       <section className="join-section">
-        <div className="join-decoration">✳</div>
+        <div className="join-decoration" aria-hidden="true">✳</div>
 
         <span className="section-eyebrow">YOUR STORY STARTS HERE</span>
 
@@ -219,7 +219,7 @@ const MainPage = () => {
         </p>
 
         <Link to="/publish" className="button-light">
-          Write your story <span>↗</span>
+          Write your story <span aria-hidden="true">↗</span>
         </Link>
       </section>
 

@@ -7,6 +7,7 @@ export interface Article {
 	createdAt: string;
     genres: string[];
     likesCount: number;
+    likedByMe?: boolean;
 }
 
 export interface User {

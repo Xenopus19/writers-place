@@ -53,9 +53,9 @@ const BackendHealthCheck = ({ children }: { children: React.ReactNode }) => {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f7f6f0] px-6 text-[#303328]">
       <div className="flex flex-col items-center text-center">
-        <Spinner aria-hidden="true" className="mb-7 size-10 text-[#899273] motion-reduce:animate-none" />
+        <Spinner aria-hidden="true" className="mb-7 size-10 text-[#5f6a4b] motion-reduce:animate-none" />
         <h1 role="status" className="font-serif text-3xl font-normal sm:text-4xl">Please wait</h1>
-        <p className="mt-4 font-mono text-sm text-[#73746a]" aria-label={`Time waiting: ${minutes} minutes ${seconds} seconds`}>
+        <p className="mt-4 font-mono text-sm text-[#636459]" aria-label={`Time waiting: ${minutes} minutes ${seconds} seconds`}>
           {minutes}:{seconds}
         </p>
       </div>
