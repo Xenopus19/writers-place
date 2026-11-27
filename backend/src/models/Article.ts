@@ -1,11 +1,14 @@
 import {
   DataTypes,
   Model,
+  type BelongsToManySetAssociationsMixin,
   type CreationOptional,
   type InferAttributes,
   type InferCreationAttributes,
+  type NonAttribute,
 } from 'sequelize';
 import { sequelize } from '../util/db.js';
+import type { Genre } from './Genre.js';
 
 export class Article extends Model<
   InferAttributes<Article>,
@@ -18,6 +21,9 @@ export class Article extends Model<
   declare userId: string;
   declare embedding: CreationOptional<string | null>;
   declare createdAt: CreationOptional<Date>;
+
+  declare genres?: NonAttribute<Genre[]>;
+  declare setGenres: BelongsToManySetAssociationsMixin<Genre, string>;
 }
 
 Article.init(

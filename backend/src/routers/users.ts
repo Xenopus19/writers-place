@@ -1,31 +1,30 @@
 import bcrypt from 'bcryptjs';
 import { Router } from 'express';
-import { UniqueConstraintError } from 'sequelize';
 import { User } from '../models/index.js';
 import { createUserSchema } from '../schemas/createUserSchema.js';
 import { requireAuth } from '../util/auth.js';
+import { AppError } from '../util/appError.js';
 
 const usersRouter = Router();
 
-usersRouter.get('/me', requireAuth, async (req, res) => {
+usersRouter.get('/me', requireAuth, async (req, res, next) => {
   try {
     const { id } = req.tokenUser;
     const user = await User.findByPk(id);
     if (!user) {
-      res.status(404).json({ error: 'User not found' });
+      next(AppError.notFound('User not found'));
       return;
     }
     res.json(user);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 
-usersRouter.post('/', async (req, res) => {
+usersRouter.post('/', async (req, res, next) => {
   const parsed = createUserSchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.issues });
+    next(parsed.error);
     return;
   }
 
@@ -37,12 +36,7 @@ usersRouter.post('/', async (req, res) => {
     const { passwordHash: _omit, ...data } = user.toJSON();
     res.status(201).json({ data });
   } catch (error) {
-    if (error instanceof UniqueConstraintError) {
-      res.status(409).json({ error: 'Username already taken' });
-      return;
-    }
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 

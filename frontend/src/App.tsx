@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './App.css'
 import AppLayout from './AppLayout'
 import ArticlePage from './components/ArticlePage'
+import ArticleSearch from './components/ArticleSearch'
 import ArticlesCatalog from './components/ArticlesCatalog'
 import LogIn from './components/Login'
 import MainPage from './components/MainPage'
@@ -11,6 +12,9 @@ import ProtectedPage from './components/ProtectedPage'
 import SignUp from './components/SignUp'
 import UserPage from './components/UserPage'
 import { UserProvider } from './components/UserContext'
+import BackendHealthCheck from './components/BackendHealthCheck'
+import { ErrorProvider } from './components/ErrorContext'
+import Error from './components/Error'
 
 const router = createBrowserRouter([
   {
@@ -18,6 +22,7 @@ const router = createBrowserRouter([
     children: [
       { path: '/', element: <MainPage /> },
       { path: '/articles', element: <ArticlesCatalog /> },
+      { path: '/search', element: <ArticleSearch /> },
       { path: '/articles/:id', element: <ArticlePage /> },
       { path: '/login', element: <LogIn /> },
       { path: '/signup', element: <SignUp /> },
@@ -46,9 +51,14 @@ const queryClient = new QueryClient()
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <UserProvider>
-        <RouterProvider router={router} />
-      </UserProvider>
+      <ErrorProvider>
+        <BackendHealthCheck>
+          <UserProvider>
+            <RouterProvider router={router} />
+          </UserProvider>
+        </BackendHealthCheck>
+        <Error />
+      </ErrorProvider>
     </QueryClientProvider>
   )
 }

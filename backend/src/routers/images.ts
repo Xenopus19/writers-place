@@ -4,10 +4,10 @@ import { getUploadUrl } from '../util/s3.js';
 
 const imagesRouter = Router();
 
-imagesRouter.post('/', async (req, res) => {
+imagesRouter.post('/', async (req, res, next) => {
   const parsed = ImageUploadSchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.issues });
+    next(parsed.error);
     return;
   }
 
@@ -16,8 +16,7 @@ imagesRouter.post('/', async (req, res) => {
     const data = await getUploadUrl(safeName, parsed.data.fileType);
     res.status(201).json({ ...data });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    next(error);
   }
 });
 

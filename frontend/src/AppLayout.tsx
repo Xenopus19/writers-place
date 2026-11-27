@@ -18,15 +18,12 @@ const AppLayout = () => {
           writers<span>place.</span>
         </Link>
 
-        <button
-          type="button"
-          className="menu-toggle"
-          aria-expanded={isMenuOpen}
-          aria-controls="primary-navigation"
-          onClick={() => setIsMenuOpen((open) => !open)}
-        >
-          {isMenuOpen ? 'Close' : 'Menu'}
-        </button>
+        <nav className="site-nav">
+          <Link to="/">Home</Link>
+          <Link to="/articles">Explore</Link>
+         <Link to="/search">Search</Link>
+          {user && <Link to="/profile">Profile</Link>}
+        </nav>
 
         <div
           className={`site-menu${isMenuOpen ? ' is-open' : ''}`}

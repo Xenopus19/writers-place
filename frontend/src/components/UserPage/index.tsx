@@ -1,7 +1,9 @@
+import { Link } from 'react-router-dom';
 import useLogin from '../../hooks/useLogin';
 import useArticles from '../../hooks/useArticles';
 import ArticleCard from '../ArticleCard';
 import { useUser } from '../UserContext';
+
 
 const UserPage = () => {
   const user = useUser();
@@ -53,33 +55,12 @@ const UserPage = () => {
 
       <div className="profile-content-section">
         <h2 className="section-title">My Articles</h2>
-        {isLoading ? (
-          <p role="status">Loading articles…</p>
-        ) : isError ? (
-          <p role="alert">
-            {error instanceof Error ? error.message : 'Unable to load articles.'}
-          </p>
-        ) : userArticles.length === 0 ? (
-          <div className="empty-articles">
-            <p>You haven't published any stories yet.</p>
-            <a href="/publish" className="button-dark" style={{ marginTop: '15px', display: 'inline-flex' }}>
-              Write your first story ↗
-            </a>
-          </div>
-        ) : (
-          <div className="catalog-grid">
-            {userArticles.map((article) => (
-              <ArticleCard
-                key={article.id}
-                title={article.title}
-                excerpt={article.description}
-                image="https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=800"
-                tag=""
-                href={`/articles/${article.id}`}
-              />
-            ))}
-          </div>
-        )}
+        <div className="empty-articles">
+          <p>You haven't published any stories yet.</p>
+          <Link to="/publish" className="button-dark" style={{ marginTop: '15px', display: 'inline-flex' }}>
+            Write your first story ↗
+          </Link>
+        </div>
       </div>
     </div>
   );

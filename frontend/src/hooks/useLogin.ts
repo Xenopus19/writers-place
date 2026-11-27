@@ -19,15 +19,17 @@ const useLogin = () => {
   const login = async (data: LoginCredentials) => {
     const loginResult = await loginMutation.mutateAsync(data);
 
-    if (loginResult?.token) {
-      localStorage.setItem(TOKEN, loginResult.token);
-      await queryClient.fetchQuery({
-        queryKey: ['me'],
-        queryFn: getCurrentUser,
-        staleTime: 0,
-      });
-      navigate('/');
+    if (!loginResult?.token) {
+      throw new Error('Login response did not contain a token');
     }
+
+    localStorage.setItem(TOKEN, loginResult.token);
+    await queryClient.fetchQuery({
+      queryKey: ['me'],
+      queryFn: getCurrentUser,
+      staleTime: 0,
+    });
+    navigate('/');
 
     return loginResult;
   };

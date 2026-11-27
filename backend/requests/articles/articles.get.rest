@@ -4,6 +4,9 @@
 ### Get all articles
 GET {{baseUrl}}
 
+### Get articles filtered by genre
+GET {{baseUrl}}?genre=Fiction
+
 ### Search articles by text query (semantic)
 GET {{baseUrl}}/search?q=nuclear%20fusion&limit=3
 

@@ -1,0 +1,4 @@
+@baseUrl = http://localhost:3001/api/genres
+
+### Get all available genres
+GET {{baseUrl}}

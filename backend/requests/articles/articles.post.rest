@@ -9,7 +9,31 @@ Authorization: Bearer {{token}}
 {
     "title": "Stellar Nucleosynthesis",
     "description": "How intense gravitational pressure inside main-sequence stars fuses lighter elements into heavier nuclei over billions of years.",
-    "text": "Nuclear fusion in stellar cores overcomes electrostatic repulsion through extreme heat and pressure, converting hydrogen into helium and eventually forging heavier metals up to iron."
+    "text": "Nuclear fusion in stellar cores overcomes electrostatic repulsion through extreme heat and pressure, converting hydrogen into helium and eventually forging heavier metals up to iron.",
+    "genres": ["Science", "Essay"]
+}
+
+### Add article with unknown genre (expect 400)
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "My first article",
+    "description": "A short description of the article",
+    "text": "This is the full text of the article.",
+    "genres": ["NotAGenre"]
+}
+
+### Add article without genres (expect 400)
+POST {{baseUrl}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "My first article",
+    "description": "A short description of the article",
+    "text": "This is the full text of the article."
 }
 
 ### Add article without authentication (expect 401)

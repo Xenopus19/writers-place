@@ -10,7 +10,35 @@ Authorization: Bearer {{token}}
 {
   "title": "Updated article title",
   "description": "An updated short description",
-  "text": "Updated full article text."
+  "text": "Updated full article text.",
+  "genres": ["Fiction", "Drama"]
+}
+
+### Update only genres (valid)
+PUT {{baseUrl}}/{{articleId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "genres": ["Culture"]
+}
+
+### Update article with unknown genre (expect 400)
+PUT {{baseUrl}}/{{articleId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "genres": ["NotAGenre"]
+}
+
+### Update article with empty genres array (expect 400)
+PUT {{baseUrl}}/{{articleId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "genres": []
 }
 
 ### Update article without authentication (expect 401)

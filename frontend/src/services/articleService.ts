@@ -1,33 +1,45 @@
 import api from "../utils/api";
+import type { CreateComment, UpdateComment } from "@writers-place/shared";
+import type { Article, Comment } from "../types";
 
-export type CreateArticleData = {
-  title: string;
-  description: string;
-  text: string;
+export const getArticle = async (id: string): Promise<Article> => {
+  const { data } = await api.get<Article>(`/articles/${id}`);
+  return data;
 };
 
-export type Article = {
-  id: number;
-  title: string;
-  description: string;
-  text: string;
-  userId: number;
-  createdAt: string;
+export const getArticleComments = async (
+  articleId: string,
+): Promise<Comment[]> => {
+  const { data } = await api.get<Comment[]>(`/articles/${articleId}/comments`);
+  return data;
 };
 
-export const createArticle = async (
-  data: CreateArticleData,
-): Promise<unknown> => {
-  const response = await api.post<{ data: unknown }>("/articles", data);
-  return response.data.data;
+export const createArticleComment = async (
+  articleId: string,
+  comment: CreateComment,
+): Promise<Comment> => {
+  const { data } = await api.post<{ data: Comment }>(
+    `/articles/${articleId}/comments`,
+    comment,
+  );
+  return data.data;
 };
 
-export const getArticles = async (): Promise<Article[]> => {
-  const response = await api.get<Article[]>("/articles");
-  return response.data;
+export const updateArticleComment = async (
+  articleId: string,
+  commentId: string,
+  comment: UpdateComment,
+): Promise<Comment> => {
+  const { data } = await api.put<{ data: Comment }>(
+    `/articles/${articleId}/comments/${commentId}`,
+    comment,
+  );
+  return data.data;
 };
 
-export const getArticle = async (id: string | number): Promise<Article> => {
-  const response = await api.get<Article>(`/articles/${encodeURIComponent(id)}`);
-  return response.data;
+export const deleteArticleComment = async (
+  articleId: string,
+  commentId: string,
+): Promise<void> => {
+  await api.delete(`/articles/${articleId}/comments/${commentId}`);
 };
