@@ -2,6 +2,25 @@ import api from "../utils/api";
 import type { CreateComment, UpdateComment } from "@writers-place/shared";
 import type { Article, Comment } from "../types";
 
+export const getArticles = async (): Promise<Article[]> => {
+  const { data } = await api.get<Article[]>("/articles");
+  return data;
+};
+
+export type CreateArticleData = {
+  title: string;
+  description: string;
+  text: string;
+  genres: string[];
+};
+
+export const createArticle = async (
+  article: CreateArticleData,
+): Promise<unknown> => {
+  const { data } = await api.post<{ data: unknown }>("/articles", article);
+  return data.data;
+};
+
 export const getArticle = async (id: string): Promise<Article> => {
   const { data } = await api.get<Article>(`/articles/${id}`);
   return data;
